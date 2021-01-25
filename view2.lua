@@ -7,15 +7,10 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
--- 전달한 변수 데려오기
-local score = composer.getVariable("score")
-
 function scene:create( event )
 	local sceneGroup = self.view
 	
-	local background = display.newImageRect( "img/score.jpg", display.contentWidth, display.contentHeight )
-	background.x = display.contentWidth/2
-	background.y = display.contentHeight/2
+	
 end
 
 function scene:show( event )
