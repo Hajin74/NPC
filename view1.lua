@@ -7,10 +7,125 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
+-- 랜덤함수 초기화
+math.randomseed(os.time())
+
+-- 버튼 라이브러리
+local widget = require("widget")
+
+-- 변수 선언
+local background
+local ms = 1000 -- 벌레 생성 시간
+local score = 000
+local time = 30
+local bluebugUI = {}
+local ladybugUI = {}
+local yellowbugUI = {}
+local honeybeeUI = {}
+local catUI = {}
+local gameUI = {} -- 1: 점수표시, 2: 시간표시
+
 function scene:create( event )
 	local sceneGroup = self.view
 	
+	-- 배경화면
+	background = display.newImageRect("img/BG_Forest.png", display.contentWidth, display.contentHeight)
+	background.x, background.y = display.contentWidth/2, display.contentHeight/2
+
+	-- 점수
+	gameUI[1] = display.newText({
+		text = "0000", x = 1200, y = 50, width = 150,
+		font = "굴림", fontSize = 50
+	})
 	
+	-- 시간 표시
+	gameUI[2] = display.newText({
+		text = "30초", x = 120, y = 50, width = 150,
+		font = "굴림", fontSize = 50
+	})
+	-- 시간 흐름
+	local function timeEvent()
+		time = time - 1
+		gameUI[2].text = string.format("%02d초", time)
+	end
+
+	-- 게임 종료 함수
+	local function resultEvent()
+		composer.gotoScene("view2")
+	end
+
+	-- 벌레 삭제 함수
+	local function clickEvent(event)
+		transition.to(event.target, {time = 200, alpha = 0}) -- 클릭하면 벌레가 별로 바뀜
+		score = score + 10 -- 점수가 올라감
+		if score == 1430 then
+			resultEvent()
+		end
+		gameUI[1].text = string.format("%04d", score) -- 올라간 점수 표시
+	end
+
+
+	-- 벌레 생성 함수
+	local function makeEvent()
+		-- bluebugUI
+		for i = 1, 2, 1 do
+			bluebugUI[i] = widget.newButton({
+				defaultFile = "img/bluebug.png", overFile = "img/paw.png",
+				width = 100, height = 100, onPress = clickEvent
+			})
+			bluebugUI[i].x, bluebugUI[i].y = math.random(50, 1230), math.random(50, 670)
+			sceneGroup:insert(bluebugUI[i])
+		end
+		-- yellowbugUI
+		for i = 1, 3, 1 do
+			yellowbugUI[i] = widget.newButton({
+				defaultFile = "img/yellowbug.png", overFile = "img/paw.png",
+				width = 100, height = 100, onPress = clickEvent
+			})
+			yellowbugUI[i].x, yellowbugUI[i].y = math.random(50, 1230), math.random(50, 670)
+			sceneGroup:insert(yellowbugUI[i])
+		end
+		-- ladybugUI
+		for i = 1, 4, 1 do
+			ladybugUI[i] = widget.newButton({
+				defaultFile = "img/ladybug.png", overFile = "img/paw.png",
+				width = 100, height = 100, onPress = clickEvent
+			})
+			ladybugUI[i].x, ladybugUI[i].y = math.random(50, 1230), math.random(50, 670)
+			sceneGroup:insert(ladybugUI[i])
+		end
+		-- honeybeeUI
+		for i = 1, 2, 1 do
+			honeybeeUI[i] = widget.newButton({
+				defaultFile = "img/honeybee.png", overFile = "img/paw.png",
+				width = 100, height = 100, onPress = clickEvent
+			})
+			honeybeeUI[i].x, honeybeeUI[i].y = math.random(50, 1230), math.random(50, 670)
+			sceneGroup:insert(honeybeeUI[i])
+		end
+
+		ms = ms + 3000 -- 벌레 생성 함수를 실행시키는 시간을 점차 늦춤
+	end
+
+	makeEvent()
+	
+	-- 시간이 지나면 새로운 벌레가 계속 생김, 타이머
+	timer.performWithDelay(ms, makeEvent, 5)
+	timer.performWithDelay(1000, timeEvent, 30)
+	timer.performWithDelay(30000, resultEvent, 1)
+	
+	--1430점 되거나 30초 끝나면 종료 후, 게임 종료 화면으로 이동
+	
+
+
+
+
+
+
+	-- 삽입
+	sceneGroup:insert(background)
+	
+
 end
 
 function scene:show( event )
