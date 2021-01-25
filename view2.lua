@@ -7,9 +7,17 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
+-- 변수 받기
+local score = composer.getVariable("score")
+
+-- 변수 선언
+local background
+
 function scene:create( event )
 	local sceneGroup = self.view
 	
+	background = display.newImageRect("img/BG_Forest.png", display.contentWidth, display.contentHeight)
+	background.x, background.y = display.contentWidth/2, display.contentHeight/2
 	
 end
 

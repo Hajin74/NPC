@@ -31,10 +31,10 @@ function scene:create( event )
 	-- 배경화면
 	background = display.newImageRect("img/BG_Forest.png", display.contentWidth, display.contentHeight)
 	background.x, background.y = display.contentWidth/2, display.contentHeight/2
-
+	sceneGroup:insert(background)
 	-- 점수
 	gameUI[1] = display.newText({
-		text = "0000", x = 1200, y = 50, width = 150,
+		text = "0000점", x = 1180, y = 50, width = 200,
 		font = "굴림", fontSize = 50
 	})
 	
@@ -51,6 +51,7 @@ function scene:create( event )
 
 	-- 게임 종료 함수
 	local function resultEvent()
+		composer.setVariable("score", score)
 		composer.gotoScene("view2")
 	end
 
@@ -61,7 +62,7 @@ function scene:create( event )
 		if score == 1430 then
 			resultEvent()
 		end
-		gameUI[1].text = string.format("%04d", score) -- 올라간 점수 표시
+		gameUI[1].text = string.format("%04d점", score) -- 올라간 점수 표시
 	end
 
 
@@ -106,11 +107,11 @@ function scene:create( event )
 
 		ms = ms + 3000 -- 벌레 생성 함수를 실행시키는 시간을 점차 늦춤
 	end
-
-	makeEvent()
+	
 	
 	-- 시간이 지나면 새로운 벌레가 계속 생김, 타이머
-	timer.performWithDelay(ms, makeEvent, 5)
+	makeEvent()
+	timer.performWithDelay(ms, makeEvent, 10)
 	timer.performWithDelay(1000, timeEvent, 30)
 	timer.performWithDelay(30000, resultEvent, 1)
 	
@@ -123,8 +124,9 @@ function scene:create( event )
 
 
 	-- 삽입
-	sceneGroup:insert(background)
-	
+	for i = 1, 2, 1 do
+		sceneGroup:insert(gameUI[i])
+	end
 
 end
 
