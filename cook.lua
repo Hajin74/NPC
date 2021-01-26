@@ -20,6 +20,7 @@ local gameUI = {} -- 1: setting, 2: recipe, 3: trashcan, 4: back_arrow(go to cou
 local igUI = {} -- InGedient/ 나열된 재료/  1: 김, 2: 밥, 3: 단무지, 4: 달걀, 5: 햄
 local usedigUI = {} -- used InGedient/ 조리대 위 재료/ 1: 김, 2: 밥, 3: 단무지, 4: 달걀, 5: 햄
 local btnUI = {} -- 1: 완료 btn
+local kimbapUI = {} -- 김밥종류/ 1: 꼬마김밥
 
 function scene:create( event )
 	local sceneGroup = self.view
@@ -40,17 +41,43 @@ function scene:create( event )
     gameUI[5] = display.newImageRect("img/cuttingboard.png", 700, 700)
     gameUI[5].x, gameUI[5].y = display.contentWidth/2 + 250, display.contentHeight/2
 
+    kimbapUI[1] = display.newImageRect("img/kimbap.png", 250, 250)
+    kimbapUI[1].x, kimbapUI[1].y = 795, 360
+    kimbapUI[1].alpha = 0
 
-    -- 재료들 클릭하면 재료가 사용되어지는 함수
+    kimbapUI[2] = display.newImageRect("img/kimbap_fail.png", 250, 250)
+    kimbapUI[2].x, kimbapUI[2].y = 795, 360
+    kimbapUI[2].alpha = 0
+
+    -- 재료들 클릭하면 재료가 사용되어지는 함수: 성공적으로 완성이 되면 김밥을 가지고 counter로 이동
     local function putIg(e)
         usedigUI[e.target.name].alpha = 1
     end
 
     -- 김밥 완성 함수
     local function completeKimbap(e)
+        local flag = 1
 
+        for i = 1, 5, 1 do
+            if usedigUI[i].alpha == 0 then
+                flag = 0
+            end
+        end
+
+        if flag == 1 then
+            for j = 1, 5, 1 do
+                usedigUI[j].alpha = 0
+            end
+            kimbapUI[1].alpha = 1
+        else
+            for j = 1, 5, 1 do
+                usedigUI[j].alpha = 0
+            end
+            kimbapUI[2].alpha = 1
+        end
     end
 
+    
     -- 김밥 재료들 나열
     igUI[1] = display.newImageRect("img/seaweed.png", 100, 100)
     igUI[2] = display.newImageRect("img/rice1.png", 100, 100)
@@ -79,11 +106,12 @@ function scene:create( event )
         usedigUI[i].alpha = 0
     end
 
+    -- 완료 버튼
     btnUI[1] = widget.newButton({
         defaultFile = "img/ok.png", overFile = "img/ok.png", 
         width = 100, height = 100, onPress = completeKimbap
     })
-    
+    btnUI[1].x, btnUI[1].y = 1145, display.contentHeight/2
 
 
 
