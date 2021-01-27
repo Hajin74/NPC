@@ -126,12 +126,12 @@ function scene:create( event )
     end
     
     -- 금액 계산
-    local function calckimbap()
+    local function calcKimbap()
         money = money + 1000
         moneyUI[1].text = string.format("%05d원", money)
         for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
         for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
-        kimbapUI[1]:removeEventListener("tap", calckimbap)
+        kimbapUI[1]:removeEventListener("tap", calcKimbap)
         regame()
     end
 
@@ -166,7 +166,7 @@ function scene:create( event )
         else -- 김밥 성공
             kimbapUI[1].alpha = 1
             kimbapUI[2].alpha = 0
-            kimbapUI[1]:addEventListener("tap", calckimbap)
+            kimbapUI[1]:addEventListener("tap", calcKimbap)
             for i = 1, 5, 1 do igUI[i]:removeEventListener("tap", putIg) end
         end
     end
