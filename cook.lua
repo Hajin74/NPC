@@ -18,12 +18,13 @@ local arrow = composer.getVariable("arrow")
 
 -- 변수 선언
 local background = {} -- 주방, 도마
-local gameUI = {} -- 환경설정, 레시피, 카운터로 가기
+local gameUI = {} -- 환경설정, 레시피, 카운터로 가기, 오픈된 레시피북
 local btnUI = {} -- 휴지통 버튼, 완성 버튼
 local igUI = {} -- 나열된 재료/ 김, 밥, 단무지, 달걀, 햄
 local usedigUI = {} -- 도마 위 사용된 재료/ 김, 밥, 단무지, 달걀, 햄
 local kimbapUI = {} -- 꼬마김밥, 다른김밥1, 다른김밥2 ...
 local moneyUI = {} -- 표시, 금액
+local flag
 
 
 function scene:create( event )
@@ -43,6 +44,9 @@ function scene:create( event )
     gameUI[2].x, gameUI[2].y = display.contentWidth - 120, 50
     gameUI[3] = display.newImageRect("img/back_arrow.png", 70, 70)
     gameUI[3].x, gameUI[3].y = display.contentWidth - 200, 50
+    gameUI[4] = display.newImageRect("img/recipe_over.png", 300, 200)
+    gameUI[4].x, gameUI[4].y = 1100, 200
+    gameUI[4].alpha = 0
     
     -- 하단 우측 버튼 UI
     btnUI[1] = display.newImageRect("img/trashcan.png", 70, 70)
@@ -83,53 +87,75 @@ function scene:create( event )
     -- 돈
     moneyUI[1] = display.newText("00000원", 800, display.contentHeight - 50, "굴림")
     moneyUI[1]:setFillColor(0)
-    moneyUI[1].size = 80
+    moneyUI[1].size = 60
     moneyUI[2] = 0
+
 
     -- [[ 함수들 ]]
     -- 카운터로 이동하는 함수
     local function moveCounter()
-        --composer.setVariable("backarrow", gameUI[3])
         composer.gotoScene("counter")
     end
+
     -- 도마 위에 재료를 올려놓는 함수
     local function putIg(event)
         usedigUI[event.target.name].alpha = 1
     end
     
-    -- 휴지통 버튼 함수
+    -- 레시피북 열기
+    local function openRecipe()
+        gameUI[4].alpha = 1
+    end
+
+    -- 레시피북 닫기
+    local function closeRecipe()
+        gameUI[4].alpha = 0
+    end
+
+    local function regame()
+        for i = 1, 5, 1 do igUI[i]:addEventListener("tap", putIg) end
+    end
+
+    -- 휴지통 버튼 함수/ 사용된 재료 완성된 김밥 모두 삭제
     local function cancelIg()
         for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
         for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
+        if flag == 0 then
+            regame()
+        end
     end
     
     -- 금액 계산
     local function calc()
         moneyUI[2] = moneyUI[2] + 1000
         moneyUI[1].text = string.format("%05d원", moneyUI[2])
-        cancelIg()
+        for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
+        for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
+        regame()
     end
 
     -- 완성 버튼 함수
     local function finishIg()
-        local flag = 1
+        flag = 1
         
         for i = 1, 5, 1 do
             if usedigUI[i].alpha == 0 then
                 flag = 0
-                break
+                --break
             end
         end
         
-        cancelIg()
+        for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
+        for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
         
-        if flag == 0 then
+        if flag == 0 then -- 김밥 실패
             kimbapUI[1].alpha = 0
             kimbapUI[2].alpha = 1
-            for i = 1, 5, 1 do igUI[i]:removeEventListener("touch", putIg) end
-        else
+            for i = 1, 5, 1 do igUI[i]:removeEventListener("tap", putIg) end
+        else -- 김밥 성공
             kimbapUI[1].alpha = 1
             kimbapUI[2].alpha = 0
+            for i = 1, 5, 1 do igUI[i]:removeEventListener("tap", putIg) end
             kimbapUI[1]:addEventListener("tap", calc)
         end
     end
@@ -137,10 +163,13 @@ function scene:create( event )
 
 
     -- 이벤트 등록
-    gameUI[3]:addEventListener("tap", moveCounter)
-    for i = 1, 5, 1 do igUI[i]:addEventListener("touch", putIg) end
-    btnUI[1]:addEventListener("touch", cancelIg)
-    btnUI[2]:addEventListener("tap", finishIg)
+    gameUI[2]:addEventListener("tap", openRecipe) -- 레시피 아이콘
+    gameUI[3]:addEventListener("tap", moveCounter) -- 카운터로 이동하기
+    gameUI[4]:addEventListener("tap", closeRecipe) -- 레시피 창
+    for i = 1, 5, 1 do igUI[i]:addEventListener("tap", putIg) end
+    btnUI[1]:addEventListener("tap", cancelIg) -- 휴지통
+    btnUI[2]:addEventListener("tap", finishIg) -- 완성버튼
+    
 
     -- Scene 삽입
     for i = 1, 2, 1 do sceneGroup:insert(background[i]) end
