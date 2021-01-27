@@ -25,6 +25,7 @@ local usedigUI = {} -- 도마 위 사용된 재료/ 김, 밥, 단무지, 달걀,
 local kimbapUI = {} -- 꼬마김밥, 다른김밥1, 다른김밥2 ...
 local moneyUI = {} -- 표시, 금액
 local flag
+local money 
 
 
 function scene:create( event )
@@ -85,10 +86,10 @@ function scene:create( event )
     kimbapUI[2].alpha = 0
 
     -- 돈
-    moneyUI[1] = display.newText("00000원", 800, display.contentHeight - 50, "굴림")
+    moneyUI[1] = display.newText("10000원", 800, display.contentHeight - 50, "굴림")
     moneyUI[1]:setFillColor(0)
     moneyUI[1].size = 60
-    moneyUI[2] = 0
+    money = 10000
 
 
     -- [[ 함수들 ]]
@@ -97,23 +98,40 @@ function scene:create( event )
         composer.gotoScene("counter")
     end
 
+    
+    -- 재료 계산
+    local function calcIg()
+        money = money - 100
+        moneyUI[1].text = string.format("%05d원", money)
+    end
+    
     -- 도마 위에 재료를 올려놓는 함수
     local function putIg(event)
         usedigUI[event.target.name].alpha = 1
+        calcIg()
     end
     
     -- 레시피북 열기
     local function openRecipe()
         gameUI[4].alpha = 1
     end
-
+    
     -- 레시피북 닫기
     local function closeRecipe()
         gameUI[4].alpha = 0
     end
-
+    
     local function regame()
         for i = 1, 5, 1 do igUI[i]:addEventListener("tap", putIg) end
+    end
+    
+    -- 금액 계산
+    local function calckimbap()
+        money = money + 1000
+        moneyUI[1].text = string.format("%05d원", money)
+        for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
+        for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
+        regame()
     end
 
     -- 휴지통 버튼 함수/ 사용된 재료 완성된 김밥 모두 삭제
@@ -125,14 +143,6 @@ function scene:create( event )
         end
     end
     
-    -- 금액 계산
-    local function calc()
-        moneyUI[2] = moneyUI[2] + 1000
-        moneyUI[1].text = string.format("%05d원", moneyUI[2])
-        for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
-        for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
-        regame()
-    end
 
     -- 완성 버튼 함수
     local function finishIg()
@@ -156,7 +166,7 @@ function scene:create( event )
             kimbapUI[1].alpha = 1
             kimbapUI[2].alpha = 0
             for i = 1, 5, 1 do igUI[i]:removeEventListener("tap", putIg) end
-            kimbapUI[1]:addEventListener("tap", calc)
+            kimbapUI[1]:addEventListener("tap", calckimbap)
         end
     end
     
