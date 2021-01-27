@@ -15,7 +15,7 @@
 
 
 ## 기능(함수)
-- - 카운터 ↔ 주방 이동: moveCounter()
+- 카운터 ↔ 주방 이동: moveCounter()
 - 레시피북 열람/닫기 가능: openRecipe(), closeRecipe()
 - 각각의 재료를 쓸 때마다 금액 소진 (100원씩 감소): calcIg()
 - 완성된 김밥을 팔면 1000원 이익: calcKimbap()
