@@ -20,7 +20,7 @@ local gameUI = {} -- 1: setting, 2: recipe, 3: trashcan, 4: back_arrow(go to cou
 local igUI = {} -- InGedient/ 나열된 재료/  1: 김, 2: 밥, 3: 단무지, 4: 달걀, 5: 햄
 local usedigUI = {} -- used InGedient/ 조리대 위 재료/ 1: 김, 2: 밥, 3: 단무지, 4: 달걀, 5: 햄
 local btnUI = {} -- 1: 완료 btn
-local kimbapUI = {} -- 김밥종류/ 1: 꼬마김밥
+local kimbapUI = {} -- 김밥종류/ 1: 꼬마김밥, 2: 다른 김밥
 
 function scene:create( event )
 	local sceneGroup = self.view
@@ -41,6 +41,7 @@ function scene:create( event )
     gameUI[5] = display.newImageRect("img/cuttingboard.png", 700, 700)
     gameUI[5].x, gameUI[5].y = display.contentWidth/2 + 250, display.contentHeight/2
 
+    -- 완성된 김밥 UI
     kimbapUI[1] = display.newImageRect("img/kimbap.png", 250, 250)
     kimbapUI[1].x, kimbapUI[1].y = 795, 360
     kimbapUI[1].alpha = 0
@@ -49,35 +50,27 @@ function scene:create( event )
     kimbapUI[2].x, kimbapUI[2].y = 795, 360
     kimbapUI[2].alpha = 0
 
-    -- 재료들 클릭하면 재료가 사용되어지는 함수: 성공적으로 완성이 되면 김밥을 가지고 counter로 이동
+    -- 재료 올리는 함수
     local function putIg(e)
+        for i = 1, 2, 1 do
+            if kimbapUI[i].alpha == 1 then
+                kimbapUI[i].alpha = 0
+            end
+        end
         usedigUI[e.target.name].alpha = 1
     end
 
-    -- 김밥 완성 함수
-    local function completeKimbap(e)
-        local flag = 1
-
+    -- 재료 다시 누를 수 있는 함수
+    local function regame()
         for i = 1, 5, 1 do
-            if usedigUI[i].alpha == 0 then
-                flag = 0
-            end
+            usedigUI[i].alpha = 0
         end
-
-        if flag == 1 then
-            for j = 1, 5, 1 do
-                usedigUI[j].alpha = 0
-            end
-            kimbapUI[1].alpha = 1
-        else
-            for j = 1, 5, 1 do
-                usedigUI[j].alpha = 0
-            end
-            kimbapUI[2].alpha = 1
+        kimbapUI[2].alpha = 0
+        for i = 1, 5, 1 do 
+            igUI[i]:addEventListener("touch", putIg)
         end
     end
 
-    
     -- 김밥 재료들 나열
     igUI[1] = display.newImageRect("img/seaweed.png", 100, 100)
     igUI[2] = display.newImageRect("img/rice1.png", 100, 100)
@@ -106,14 +99,40 @@ function scene:create( event )
         usedigUI[i].alpha = 0
     end
 
+    -- 김밥 완성 함수
+    local function completeKimbap(e)
+        local flag = 1
+
+        for i = 1, 5, 1 do -- 한 재료라도 놓치면 잘못된 김밥이 만들어짐
+            if usedigUI[i].alpha == 0 then
+                flag = 0
+            end
+        end
+
+        if flag == 1 then -- 모든 재료가 다 알맞게 들어가면
+            for j = 1, 5, 1 do usedigUI[j].alpha = 0 end
+            kimbapUI[1].alpha = 1 -- 완성된 김밥이 보임
+        else -- 잘못된 김밥을 만들었을 때
+            for j = 1, 5, 1 do usedigUI[j].alpha = 0 end
+            kimbapUI[2].alpha = 1 -- 잘못된 김밥이 보임
+
+            for i = 1, 5, 1 do -- 잘못된 김밥을 휴지통에 버릴때까지 새로운 재료를 선택할 수 없음
+                igUI[i]:removeEventListener("touch", putIg)
+            end
+
+            -- 잘못된 김밥을 만들고 휴지통을 누르면
+            gameUI[3]:addEventListener("touch", regame)
+        end
+    end
+
+    
+
     -- 완료 버튼
     btnUI[1] = widget.newButton({
         defaultFile = "img/ok.png", overFile = "img/ok.png", 
         width = 100, height = 100, onPress = completeKimbap
     })
     btnUI[1].x, btnUI[1].y = 1145, display.contentHeight/2
-
-
 
     -- scene 삽입
     sceneGroup:insert(kitchenBG)
