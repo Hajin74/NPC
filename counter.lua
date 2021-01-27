@@ -7,9 +7,30 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
+local backarrow = composer.getVariable("backarrow")
+
 function scene:create( event )
-	local sceneGroup = self.view
-	
+    local sceneGroup = self.view
+    
+    local background = display.newImageRect("img/truck.png", display.contentWidth, display.contentHeight)
+    background.x, background.y = display.contentWidth/2, display.contentHeight/2
+
+    local school = display.newImageRect("img/elementaryschool.png", display.contentWidth, display.contentHeight)
+    school.x, school.y = display.contentWidth/2, display.contentHeight/2
+    school.alpha = 0.7
+
+    local arrow = display.newImageRect("img/arrow.png", 70, 70)
+    arrow.x, arrow.y = display.contentWidth - 190, 50
+    
+    local function moveCook()
+        composer.gotoScene("cook")
+    end
+
+    arrow:addEventListener("tap", moveCook)
+
+    sceneGroup:insert(school)
+    sceneGroup:insert(background)
+    sceneGroup:insert(arrow)
 end
 
 function scene:show( event )
