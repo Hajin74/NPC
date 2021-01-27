@@ -131,6 +131,7 @@ function scene:create( event )
         moneyUI[1].text = string.format("%05d원", money)
         for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
         for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
+        kimbapUI[1]:removeEventListener("tap", calckimbap)
         regame()
     end
 
@@ -165,8 +166,8 @@ function scene:create( event )
         else -- 김밥 성공
             kimbapUI[1].alpha = 1
             kimbapUI[2].alpha = 0
-            for i = 1, 5, 1 do igUI[i]:removeEventListener("tap", putIg) end
             kimbapUI[1]:addEventListener("tap", calckimbap)
+            for i = 1, 5, 1 do igUI[i]:removeEventListener("tap", putIg) end
         end
     end
     
