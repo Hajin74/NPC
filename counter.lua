@@ -7,7 +7,7 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
-local backarrow = composer.getVariable("backarrow")
+--local backarrow = composer.getVariable("backarrow")
 
 function scene:create( event )
     local sceneGroup = self.view

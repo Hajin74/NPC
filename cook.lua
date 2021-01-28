@@ -23,9 +23,9 @@ local btnUI = {} -- 휴지통 버튼, 완성 버튼
 local igUI = {} -- 나열된 재료/ 김, 밥, 단무지, 달걀, 햄
 local usedigUI = {} -- 도마 위 사용된 재료/ 김, 밥, 단무지, 달걀, 햄
 local kimbapUI = {} -- 꼬마김밥, 다른김밥1, 다른김밥2 ...
-local moneyUI = {} -- 표시, 금액
+local moneyUI = {} -- 표시
 local flag
-local money 
+local money -- 금액
 
 
 function scene:create( event )
@@ -37,6 +37,7 @@ function scene:create( event )
     background[1].x, background[1].y = display.contentWidth/2, display.contentHeight/2
     background[2] = display.newImageRect("img/cuttingboard.png", 700, 700)
     background[2].x, background[2].y = display.contentWidth/2 + 250, display.contentHeight/2
+    
     
     -- 상단 우측 게임 UI
     gameUI[1] = display.newImageRect("img/setting.png", 70, 70)
@@ -86,9 +87,11 @@ function scene:create( event )
     kimbapUI[2].alpha = 0
 
     -- 돈
-    moneyUI[1] = display.newText("10000원", 800, display.contentHeight - 50, "굴림")
-    moneyUI[1]:setFillColor(0)
-    moneyUI[1].size = 60
+    moneyUI[1] = display.newImageRect("img/money.png", 250, 75)
+    moneyUI[1].x, moneyUI[1].y = display.contentWidth - 130, 120
+    moneyUI[2] = display.newText("10000원", display.contentWidth - 120, 127, "굴림")
+    moneyUI[2]:setFillColor(0)
+    moneyUI[2].size = 30
     money = 10000
 
 
@@ -102,7 +105,7 @@ function scene:create( event )
     -- 재료 계산
     local function calcIg()
         money = money - 100
-        moneyUI[1].text = string.format("%05d원", money)
+        moneyUI[2].text = string.format("%05d원", money)
     end
     
     -- 도마 위에 재료를 올려놓는 함수
@@ -128,7 +131,7 @@ function scene:create( event )
     -- 금액 계산
     local function calcKimbap()
         money = money + 1000
-        moneyUI[1].text = string.format("%05d원", money)
+        moneyUI[2].text = string.format("%05d원", money)
         for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
         for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
         kimbapUI[1]:removeEventListener("tap", calcKimbap)
