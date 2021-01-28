@@ -23,7 +23,7 @@ local ladybugUI = {}
 local yellowbugUI = {}
 local honeybeeUI = {}
 local catUI = {}
-local gameUI = {} -- 1: 점수표시, 2: 시간표시
+local gameUI = {} -- 1: 점수표시, 2: 시간표시, 3: 캣 클릭시 실패표시
 
 function scene:create( event )
 	local sceneGroup = self.view
@@ -52,7 +52,7 @@ function scene:create( event )
 	-- 게임 종료 함수
 	local function resultEvent()
 		composer.setVariable("score", score)
-		composer.gotoScene("view2")
+		composer.gotoScene("result")
 	end
 
 	-- 벌레 삭제 함수
@@ -65,6 +65,18 @@ function scene:create( event )
 		gameUI[1].text = string.format("%04d점", score) -- 올라간 점수 표시
 	end
 
+	-- 고양이 삭제 함수
+	local function clickCatEvent(event)
+		transition.to(event.target, {time = 200, alpha = 0})
+		gameUI[3] = display.newText("나를 때리면\n어떡하냐옹!!!", event.target.x, event.target.y, "굴림")
+		gameUI[3].size = 30
+		transition.to(gameUI[3], {time = 1000, alpha = 0})
+		score = score - 20 -- 점수가 올라감
+		if score == 1430 then
+			resultEvent()
+		end
+		gameUI[1].text = string.format("%04d점", score)
+	end
 
 	-- 벌레 생성 함수
 	local function makeEvent()
@@ -104,16 +116,33 @@ function scene:create( event )
 			honeybeeUI[i].x, honeybeeUI[i].y = math.random(50, 1230), math.random(50, 670)
 			sceneGroup:insert(honeybeeUI[i])
 		end
-
-		ms = ms + 3000 -- 벌레 생성 함수를 실행시키는 시간을 점차 늦춤
+		ms = ms + 2500 -- 벌레 생성 함수를 실행시키는 시간을 점차 늦춤
 	end
-	
+
+	-- 삭제 함수
+	local function deleteEvent()
+		catUI[1].alpha = 0
+	end
+
+	-- 고양이 생성 함수
+	local function makeCatEvent()
+		catUI[1] = widget.newButton({
+			defaultFile = "img/cat.png", overFile = "img/cat.png",
+			width = 100, height = 100, onPress = clickCatEvent
+		})
+		catUI[1].x, catUI[1].y = math.random(50, 1230), math.random(50, 670)
+		timer.performWithDelay(3000, deleteEvent, 1)
+		sceneGroup:insert(catUI[1])
+		
+
+	end
 	
 	-- 시간이 지나면 새로운 벌레가 계속 생김, 타이머
 	makeEvent()
 	timer.performWithDelay(ms, makeEvent, 10)
+	timer.performWithDelay(5000, makeCatEvent, 6)
 	timer.performWithDelay(1000, timeEvent, 30)
-	timer.performWithDelay(30000, resultEvent, 1)
+	timer.performWithDelay(3000, resultEvent, 1)
 	
 	--1430점 되거나 30초 끝나면 종료 후, 게임 종료 화면으로 이동
 	

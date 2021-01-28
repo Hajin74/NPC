@@ -12,13 +12,24 @@ local score = composer.getVariable("score")
 
 -- 변수 선언
 local background
+local resultUI = {}
+local cat
 
 function scene:create( event )
 	local sceneGroup = self.view
 	
+	-- 배경화면
 	background = display.newImageRect("img/BG_Forest.png", display.contentWidth, display.contentHeight)
 	background.x, background.y = display.contentWidth/2, display.contentHeight/2
 	
+	resultUI[1] = display.newImageRect("img/speechbubble.png", 500, 500)
+	resultUI[1].x, resultUI[1].y = display.contentWidth/2 + 200, display.contentHeight/2 - 100
+	resultUI[2] = display.newText("000점\n이다옹\n  ^-^", display.contentWidth/2 + 200, display.contentHeight/2 - 140, "굴림")
+	resultUI[2].size = 80
+	resultUI[2].text = string.format("%04d점\n이다옹\n  ^-^", score)
+
+	cat = display.newImageRect("img/cat.png", 350, 350)
+	cat.x, cat.y = 400, display.contentHeight/2 + 100
 end
 
 function scene:show( event )

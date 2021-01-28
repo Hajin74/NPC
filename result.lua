@@ -7,34 +7,53 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
--- 전달한 변수 데려오기
+-- 변수 받기
 local score = composer.getVariable("score")
+
+-- 변수 선언
+local background
+local resultUI = {}
+local cat
+local gameUI = {}
 
 function scene:create( event )
 	local sceneGroup = self.view
 	
-	local background = display.newImageRect( "img/BG_Forest.png", display.contentWidth, display.contentHeight)
-	background.x = display.contentWidth/2
-    background.y = display.contentHeight/2
+	-- 배경화면
+	background = display.newImageRect("img/BG_Forest.png", display.contentWidth, display.contentHeight)
+	background.x, background.y = display.contentWidth/2, display.contentHeight/2
+	
+	resultUI[1] = display.newImageRect("img/speechbubble.png", 500, 500)
+	resultUI[1].x, resultUI[1].y = display.contentWidth/2 + 200, display.contentHeight/2 - 100
+	resultUI[2] = display.newText("000점\n이다옹\n  ^-^", display.contentWidth/2 + 200, display.contentHeight/2 - 140, "굴림")
+	resultUI[2].size = 80
+	resultUI[2].text = string.format("%04d점\n이다옹\n  ^-^", score)
 
-    local resultBg = display.newRect(display.contentWidth/2 - 10, display.contentHeight/2, display.contentWidth/2 + 200, display.contentHeight/2 + 60)
-    resultBg:setFillColor(1)
-    resultBg.alpha = 0.5
+	cat = display.newImageRect("img/cat.png", 350, 350)
+	cat.x, cat.y = 400, display.contentHeight/2 + 100
 
-    local person = display.newImageRect("img/player.png", 300, 600)
-    person.x, person.y = 1050, display.contentHeight/2
-
-
-    local endText = display.newText("당신의 점수는\n      "..score.."점", display.contentWidth/2, display.contentHeight/2, "굴림")
-	if score >= 250 then
-		endText.text = "당신의 점수는\n     "..string.format("%03d", score).."점\n프로게이머군요!"
-	elseif score >= 200 then
-		endText.text = "당신의 점수는\n     "..string.format("%03d", score).."점\nGOOD JOB"
-	else
-		endText.text = "당신의 점수는\n     "..string.format("%03d", score).."점\n 분발합시다."
+	-- 재시작 함수
+	local function restartEvent()
+		composer.gotoScene("view1")
 	end
-	endText.size = 100
-    endText:setFillColor(0)
+
+	gameUI[1] = display.newRect(1070, 620, 300, 100)
+    gameUI[1]:setFillColor(1)
+	gameUI[1].alpha = 0.5
+	gameUI[1]:addEventListener("touch", restartEvent)
+
+	gameUI[2] = display.newText("다시 하기", 1070, 620, "굴림")
+	gameUI[2].size = 60
+	gameUI[2]:setFillColor(0)
+	
+	--삽입
+	sceneGroup:insert(background)
+	sceneGroup:insert(cat)
+	for i = 1, 2, 1 do
+		sceneGroup:insert(resultUI[i])
+		sceneGroup:insert(gameUI[i])
+	end
+	
 end
 
 function scene:show( event )
