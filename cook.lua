@@ -13,11 +13,9 @@ math.randomseed(os.time())
 -- 라이브러리 추가
 local widget = require("widget")
 
--- 변수 받기
-local arrow = composer.getVariable("arrow")
 
 -- 변수 선언
-local background = {} -- 주방, 도마
+local background = {} -- 주방
 local gameUI = {} -- 환경설정, 레시피, 카운터로 가기, 오픈된 레시피북
 local btnUI = {} -- 휴지통 버튼, 완성 버튼
 local igUI = {} -- 나열된 재료/ 김, 밥, 단무지, 달걀, 햄
@@ -33,10 +31,8 @@ function scene:create( event )
     
     -- [[ UI 배치 ]]
     -- 배경화면
-    background[1] = display.newImageRect("img/kitchen.jpeg", display.contentWidth, display.contentHeight)
+    background[1] = display.newImageRect("img/kitchen.png", display.contentWidth, display.contentHeight)
     background[1].x, background[1].y = display.contentWidth/2, display.contentHeight/2
-    background[2] = display.newImageRect("img/cuttingboard.png", 700, 700)
-    background[2].x, background[2].y = display.contentWidth/2 + 250, display.contentHeight/2
     
     
     -- 상단 우측 게임 UI
@@ -57,30 +53,32 @@ function scene:create( event )
     btnUI[2].x, btnUI[2].y = display.contentWidth - 120, display.contentHeight - 50
 
     -- 좌측 나열된 재료
-    igUI[1] = display.newImageRect("img/seaweed.png", 100, 100)
-    igUI[2] = display.newImageRect("img/rice1.png", 100, 100)
-    igUI[3] = display.newImageRect("img/pickledradish.png", 100, 100)
-    igUI[4] = display.newImageRect("img/egg1.png", 100, 100)
-    igUI[5] = display.newImageRect("img/ham1.png",100, 100)
-    for i = 1, 5, 1 do
-        igUI[i].x, igUI[i].y = 120, 100 + 130 * (i - 1)
+    igUI[1] = display.newImageRect("img/rice1.png", 260, 85)
+    igUI[1].x, igUI[1].y = 805, 40
+    igUI[1].name = 1
+    igUI[2] = display.newImageRect("img/seaweed1.png", 260, 95)
+    igUI[3] = display.newImageRect("img/pickledradish1.png", 260, 95)
+    igUI[4] = display.newImageRect("img/egg1.png", 260, 95)
+    igUI[5] = display.newImageRect("img/ham1.png",260, 95)
+    for i = 2, 5, 1 do
+        igUI[i].x, igUI[i].y = 130, display.contentHeight - 45 - (i - 2) * 145
         igUI[i].name = i
     end
 
     -- 도마위에 올려지고 사용되는 김밥 재료들
-    usedigUI[1] = display.newImageRect("img/seaweed.png", 300, 250)
-    usedigUI[1].x, usedigUI[1].y = 795, 360
-    usedigUI[2] = display.newImageRect("img/rice2.png", 270, 220)
-    usedigUI[2].x, usedigUI[2].y = 795, 360
-    usedigUI[3] = display.newImageRect("img/pickledradish2.png", 270, 20)
-    usedigUI[4] = display.newImageRect("img/egg2.png", 270, 20)
-    usedigUI[5] = display.newImageRect("img/ham2.png", 270, 20)
-    for i = 3, 5, 1 do usedigUI[i].x, usedigUI[i].y = 795, 500 - 25 * (i - 1) end -- 재료 위치
+    usedigUI[1] = display.newImageRect("img/rice2.png", 455, 350)
+    usedigUI[1].x, usedigUI[1].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
+    usedigUI[2] = display.newImageRect("img/seaweed.png", 530, 400)
+    usedigUI[2].x, usedigUI[2].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
+    usedigUI[3] = display.newImageRect("img/pickledradish2.png", 450, 40)
+    usedigUI[4] = display.newImageRect("img/egg2.png", 430, 30)
+    usedigUI[5] = display.newImageRect("img/ham2.png", 430, 30)
+    for i = 3, 5, 1 do usedigUI[i].x, usedigUI[i].y = display.contentWidth/2 + 35, 550 - 20 * (i - 1) end -- 재료 위치
     for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
 
     -- 김밥들
-    kimbapUI[1] = display.newImageRect("img/kimbap.png", 250, 250)
-    kimbapUI[1].x, kimbapUI[1].y = 795, 360
+    kimbapUI[1] = display.newImageRect("img/kimbap.png", 300, 100)
+    kimbapUI[1].x, kimbapUI[1].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
     kimbapUI[1].alpha = 0
     kimbapUI[2] = display.newImageRect("img/kimbap_fail.png", 250, 250)
     kimbapUI[2].x, kimbapUI[2].y = 795, 360
@@ -186,10 +184,14 @@ function scene:create( event )
     
 
     -- Scene 삽입
-    for i = 1, 2, 1 do sceneGroup:insert(background[i]) end
+    sceneGroup:insert(background[1])
     for i = 1, 2, 1 do sceneGroup:insert(kimbapUI[i]) end
     for i = 1, 5, 1 do sceneGroup:insert(igUI[i]) end
-    for i = 1, 5, 1 do sceneGroup:insert(usedigUI[i]) end
+    sceneGroup:insert(usedigUI[2])
+    sceneGroup:insert(usedigUI[1])
+    sceneGroup:insert(usedigUI[3])
+    sceneGroup:insert(usedigUI[4])
+    sceneGroup:insert(usedigUI[5])
     sceneGroup:insert(gameUI[3])
     for i = 1, 2, 1 do sceneGroup:insert(btnUI[i]) end
 
