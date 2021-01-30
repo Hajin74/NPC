@@ -170,7 +170,7 @@ function scene:hide( event )
 	
 	if event.phase == "will" then
 		-- Called when the scene is on screen and is about to move off screen
-		--
+		composer.removeScene("cook")
 		-- INSERT code here to pause the scene
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
 	elseif phase == "did" then
