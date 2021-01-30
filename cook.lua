@@ -8,7 +8,7 @@ local composer = require( "composer" )
 local scene = composer.newScene()
 
 --변수
-local money = composer.getVariable("money")
+
 
 -- GUI
 local background -- 주방화면
@@ -89,9 +89,14 @@ function scene:create( event )
         usedIG[event.target.name].alpha = 1
     end
 
-    local function calcIG() -- 재료 계산
+    function calcCounter()
+        leftUI[2].text = string.format("%d원", money)
+    end
+
+    function calcIG() -- 재료 계산
         money = money - 80
         leftUI[2].text = string.format("%d원", money)
+        calcCook()
     end
     
     local function delAll() -- 조리대 위 음식 모두 삭제
@@ -125,9 +130,6 @@ function scene:create( event )
     end
 
 
-
-
-
     -- 이벤트 등록
     rightUI[1]:addEventListener("tap", toCounter)
     for i = 1, 5, 1 do IG[i]:addEventListener("tap", putIG) end
@@ -139,6 +141,7 @@ function scene:create( event )
     -- 장면 삽입
     sceneGroup:insert(background)
     sceneGroup:insert(rightUI[1])
+    for i = 1, 2, 1 do sceneGroup:insert(leftUI[i]) end
     for i = 1, 5, 1 do sceneGroup:insert(IG[i]) end
     sceneGroup:insert(usedIG[2])
     sceneGroup:insert(usedIG[1])
