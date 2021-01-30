@@ -7,194 +7,144 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
--- 랜덤함수
-math.randomseed(os.time())
+--변수
+local money = composer.getVariable("money")
 
--- 라이브러리 추가
-local widget = require("widget")
+-- GUI
+local background -- 주방화면
+local leftUI = {} -- 1: 금액표시창, 2:금액표시
+local rightUI = {} -- 1:화면전환
+local gameUI = {} -- 1:김밥말기, 2:버리기, 3:김밥을 쌀 수 없습니다.
+local IG = {} -- 밥, 김, 달걀, 단무지, 햄
+local usedIG = {} -- 밥, 김, 달걀, 단무지, 햄
+local kimbap = {} -- 1:꼬마김밥, 2:다른김밥
 
-
--- 변수 선언
-local background = {} -- 주방
-local gameUI = {} -- 환경설정, 레시피, 카운터로 가기, 오픈된 레시피북
-local btnUI = {} -- 휴지통 버튼, 완성 버튼
-local igUI = {} -- 나열된 재료/ 김, 밥, 단무지, 달걀, 햄
-local usedigUI = {} -- 도마 위 사용된 재료/ 김, 밥, 단무지, 달걀, 햄
-local kimbapUI = {} -- 꼬마김밥, 다른김밥1, 다른김밥2 ...
-local moneyUI = {} -- 표시
-local flag
-local money -- 금액
 
 
 function scene:create( event )
 	local sceneGroup = self.view
     
-    -- [[ UI 배치 ]]
-    -- 배경화면
-    background[1] = display.newImageRect("img/kitchen.png", display.contentWidth, display.contentHeight)
-    background[1].x, background[1].y = display.contentWidth/2, display.contentHeight/2
-    
-    
-    -- 상단 우측 게임 UI
-    gameUI[1] = display.newImageRect("img/setting.png", 70, 70)
-    gameUI[1].x, gameUI[1].y = display.contentWidth - 50, 50
-    gameUI[2] = display.newImageRect("img/recipe.png", 70, 70)
-    gameUI[2].x, gameUI[2].y = display.contentWidth - 120, 50
-    gameUI[3] = display.newImageRect("img/back_arrow.png", 70, 70)
-    gameUI[3].x, gameUI[3].y = display.contentWidth - 200, 50
-    gameUI[4] = display.newImageRect("img/recipe_over.png", 300, 200)
-    gameUI[4].x, gameUI[4].y = 1100, 200
-    gameUI[4].alpha = 0
-    
-    -- 하단 우측 버튼 UI
-    btnUI[1] = display.newImageRect("img/trashcan.png", 70, 70)
-    btnUI[1].x, btnUI[1].y = display.contentWidth - 50, display.contentHeight - 50
-    btnUI[2] = display.newImageRect("img/ok.png", 70, 70)
-    btnUI[2].x, btnUI[2].y = display.contentWidth - 120, display.contentHeight - 50
+    background = display.newImageRect("img/kitchen.png", display.contentWidth, display.contentHeight)
+    background.x, background.y = display.contentWidth/2, display.contentHeight/2
 
-    -- 좌측 나열된 재료
-    igUI[1] = display.newImageRect("img/rice1.png", 260, 85)
-    igUI[1].x, igUI[1].y = 805, 40
-    igUI[1].name = 1
-    igUI[2] = display.newImageRect("img/seaweed1.png", 260, 95)
-    igUI[3] = display.newImageRect("img/pickledradish1.png", 260, 95)
-    igUI[4] = display.newImageRect("img/egg1.png", 260, 95)
-    igUI[5] = display.newImageRect("img/ham1.png",260, 95)
+    rightUI[1] = display.newImageRect("img/back_arrow.png", 70, 70)
+    rightUI[1].x, rightUI[1].y = display.contentWidth - 190, 50
+    
+    leftUI[1] = display.newImageRect("img/money.png", 350, 60)
+	leftUI[1].x, leftUI[1].y = 200, 100
+	leftUI[2] = display.newText("0원", 180, 107, "굴림")
+	leftUI[2].text = string.format("%d원", money)
+	leftUI[2].size = 30
+    leftUI[2]:setFillColor(0)
+    
+    gameUI[1] = display.newImageRect("img/ok.png", 80, 80)
+    gameUI[1].x, gameUI[1].y = display.contentWidth/2 + 180, display.contentHeight- 60
+    gameUI[2] = display.newImageRect("img/trashcan.png", 80, 80)
+    gameUI[2].x, gameUI[2].y = display.contentWidth/2 + 280, display.contentHeight- 60
+    gameUI[3] = display.newImageRect("img/warning1.png", 300, 80)
+    gameUI[3].x, gameUI[3].y = 500, 500
+    gameUI[3].alpha = 0
+
+    -- 진열된 재료
+    IG[1] = display.newImageRect("img/rice1.png", 260, 85)
+    IG[1].x, IG[1].y = 805, 40
+    IG[1].name = 1
+    IG[2] = display.newImageRect("img/seaweed1.png", 260, 95)
+    IG[3] = display.newImageRect("img/pickledradish1.png", 260, 95)
+    IG[4] = display.newImageRect("img/egg1.png", 260, 95)
+    IG[5] = display.newImageRect("img/ham1.png", 260, 95)
     for i = 2, 5, 1 do
-        igUI[i].x, igUI[i].y = 130, display.contentHeight - 45 - (i - 2) * 145
-        igUI[i].name = i
+        IG[i].x, IG[i].y = 130, display.contentHeight-45 - (i-2)*145
+        IG[i].name = i
     end
+    
+    -- 사용 재료
+    usedIG[1] = display.newImageRect("img/rice2.png", 455, 350)
+    usedIG[1].x, usedIG[1].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
+    usedIG[2] = display.newImageRect("img/seaweed.png", 530, 400)
+    usedIG[2].x, usedIG[2].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
+    usedIG[3] = display.newImageRect("img/pickledradish2.png", 450, 40)
+    usedIG[4] = display.newImageRect("img/egg2.png", 430, 30)
+    usedIG[5] = display.newImageRect("img/ham2.png", 430, 30)
+    for i = 3, 5, 1 do usedIG[i].x, usedIG[i].y = display.contentWidth/2 + 35, 550 - 20 * (i - 1) end -- 재료 위치
+    for i = 1, 5, 1 do usedIG[i].alpha = 0 end -- 숨김처리
 
-    -- 도마위에 올려지고 사용되는 김밥 재료들
-    usedigUI[1] = display.newImageRect("img/rice2.png", 455, 350)
-    usedigUI[1].x, usedigUI[1].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
-    usedigUI[2] = display.newImageRect("img/seaweed.png", 530, 400)
-    usedigUI[2].x, usedigUI[2].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
-    usedigUI[3] = display.newImageRect("img/pickledradish2.png", 450, 40)
-    usedigUI[4] = display.newImageRect("img/egg2.png", 430, 30)
-    usedigUI[5] = display.newImageRect("img/ham2.png", 430, 30)
-    for i = 3, 5, 1 do usedigUI[i].x, usedigUI[i].y = display.contentWidth/2 + 35, 550 - 20 * (i - 1) end -- 재료 위치
-    for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
-
-    -- 김밥들
-    kimbapUI[1] = display.newImageRect("img/kimbap.png", 300, 100)
-    kimbapUI[1].x, kimbapUI[1].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
-    kimbapUI[1].alpha = 0
-    kimbapUI[2] = display.newImageRect("img/kimbap_fail.png", 250, 250)
-    kimbapUI[2].x, kimbapUI[2].y = 795, 360
-    kimbapUI[2].alpha = 0
-
-    -- 돈
-    moneyUI[1] = display.newImageRect("img/money.png", 250, 75)
-    moneyUI[1].x, moneyUI[1].y = display.contentWidth - 130, 120
-    moneyUI[2] = display.newText("10000원", display.contentWidth - 120, 127, "굴림")
-    moneyUI[2]:setFillColor(0)
-    moneyUI[2].size = 30
-    money = 10000
-
-
-    -- [[ 함수들 ]]
-    -- 카운터로 이동하는 함수
-    local function moveCounter()
+    -- 완성된 김밥
+    kimbap[1] = display.newImageRect("img/kimbap1.png", 500, 150)
+    kimbap[2] = display.newImageRect("img/kimbap2.png", 500, 150)
+    for i = 1, 2, 1 do
+        kimbap[i].x, kimbap[i].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
+        kimbap[i].alpha = 0
+        kimbap[i].name = i
+    end
+    
+    
+    
+    -- [[함수]]
+    local function toCounter() -- 카운터화면으로 이동
         composer.gotoScene("counter")
     end
-
     
-    -- 재료 계산
-    local function calcIg()
-        money = money - 100
-        moneyUI[2].text = string.format("%05d원", money)
-    end
-    
-    -- 도마 위에 재료를 올려놓는 함수
-    local function putIg(event)
-        usedigUI[event.target.name].alpha = 1
-        calcIg()
-    end
-    
-    -- 레시피북 열기
-    local function openRecipe()
-        gameUI[4].alpha = 1
-    end
-    
-    -- 레시피북 닫기
-    local function closeRecipe()
-        gameUI[4].alpha = 0
-    end
-    
-    local function regame()
-        for i = 1, 5, 1 do igUI[i]:addEventListener("tap", putIg) end
-    end
-    
-    -- 금액 계산
-    local function calcKimbap()
-        money = money + 1000
-        moneyUI[2].text = string.format("%05d원", money)
-        for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
-        for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
-        kimbapUI[1]:removeEventListener("tap", calcKimbap)
-        regame()
+    local function putIG(event) -- 재료 쓰기
+        usedIG[event.target.name].alpha = 1
     end
 
-    -- 휴지통 버튼 함수/ 사용된 재료 완성된 김밥 모두 삭제
-    local function cancelIg()
-        for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
-        for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
-        if flag == 0 then
-            regame()
+    local function calcIG() -- 재료 계산
+        money = money - 80
+        leftUI[2].text = string.format("%d원", money)
+    end
+    
+    local function delAll() -- 조리대 위 음식 모두 삭제
+        gameUI[3].alpha = 0
+        for i = 1, 2, 1 do kimbap[i].alpha = 0 end
+        for i = 1, 5, 1 do usedIG[i].alpha = 0 end
+        for i = 1, 5, 1 do 
+            IG[i]:addEventListener("tap", putIG) 
+            IG[i]:addEventListener("tap", calcIG) 
         end
     end
     
 
-    -- 완성 버튼 함수
-    local function finishIg()
-        flag = 1
-        
-        for i = 1, 5, 1 do
-            if usedigUI[i].alpha == 0 then
-                flag = 0
-                --break
-            end
-        end
-        
-        for i = 1, 2, 1 do  kimbapUI[i].alpha = 0 end
-        for i = 1, 5, 1 do usedigUI[i].alpha = 0 end
-        
-        if flag == 0 then -- 김밥 실패
-            kimbapUI[1].alpha = 0
-            kimbapUI[2].alpha = 1
-            for i = 1, 5, 1 do igUI[i]:removeEventListener("tap", putIg) end
-        else -- 김밥 성공
-            kimbapUI[1].alpha = 1
-            kimbapUI[2].alpha = 0
-            kimbapUI[1]:addEventListener("tap", calcKimbap)
-            for i = 1, 5, 1 do igUI[i]:removeEventListener("tap", putIg) end
-        end
+    local function makeKimbap()
+        for i = 1, 5, 1 do -- 일단 김밥을 말면 재료를 놓지도, 재료소진으로 인한 가격소진도 없음
+            IG[i]:removeEventListener("tap", putIG) 
+            IG[i]:removeEventListener("tap", calcIG)
+        end 
+
+        -- 꼬마김밥: 김, 밥, 달걀, 단무지, 햄
+        if (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1) then
+            for i = 1, 5, 1 do usedIG[i].alpha = 0 end
+            kimbap[1].alpha = 1
+            kimbap[1]:addEventListener("tap", putKimbap)
+            kimbap[1]:addEventListener("tap", toCounter)
+            kimbap[1]:addEventListener("tap", delAll)
+        else
+            for i = 1, 5, 1 do usedIG[i].alpha = 0 end
+            gameUI[3].alpha = 1
+        end 
     end
-    
+
+
+
 
 
     -- 이벤트 등록
-    gameUI[2]:addEventListener("tap", openRecipe) -- 레시피 아이콘
-    gameUI[3]:addEventListener("tap", moveCounter) -- 카운터로 이동하기
-    gameUI[4]:addEventListener("tap", closeRecipe) -- 레시피 창
-    for i = 1, 5, 1 do igUI[i]:addEventListener("tap", putIg) end
-    btnUI[1]:addEventListener("tap", cancelIg) -- 휴지통
-    btnUI[2]:addEventListener("tap", finishIg) -- 완성버튼
-    
+    rightUI[1]:addEventListener("tap", toCounter)
+    for i = 1, 5, 1 do IG[i]:addEventListener("tap", putIG) end
+    for i = 1, 5, 1 do IG[i]:addEventListener("tap", calcIG) end
+    gameUI[1]:addEventListener("tap", makeKimbap)
+    gameUI[2]:addEventListener("tap", delAll)
 
-    -- Scene 삽입
-    sceneGroup:insert(background[1])
-    for i = 1, 2, 1 do sceneGroup:insert(kimbapUI[i]) end
-    for i = 1, 5, 1 do sceneGroup:insert(igUI[i]) end
-    sceneGroup:insert(usedigUI[2])
-    sceneGroup:insert(usedigUI[1])
-    sceneGroup:insert(usedigUI[3])
-    sceneGroup:insert(usedigUI[4])
-    sceneGroup:insert(usedigUI[5])
-    sceneGroup:insert(gameUI[3])
-    for i = 1, 2, 1 do sceneGroup:insert(btnUI[i]) end
 
+    -- 장면 삽입
+    sceneGroup:insert(background)
+    sceneGroup:insert(rightUI[1])
+    for i = 1, 5, 1 do sceneGroup:insert(IG[i]) end
+    sceneGroup:insert(usedIG[2])
+    sceneGroup:insert(usedIG[1])
+    for i = 3, 5, 1 do sceneGroup:insert(usedIG[i]) end
+    for i = 1, 3, 1 do sceneGroup:insert(gameUI[i]) end
+    for i = 1, 2, 1 do sceneGroup:insert(kimbap[i]) end
 end
 
 function scene:show( event )
