@@ -7,8 +7,8 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
---변수
-
+-- 음악
+local calcIGMusic = audio.loadStream( "music/calcIG.wav" )
 
 -- GUI
 local background -- 주방화면
@@ -81,6 +81,10 @@ function scene:create( event )
     
     
     -- [[함수]]
+    local function playCalcIGMusic()
+        local calcIGMusicChannel = audio.play( calcIGMusic, { channel=4, loops=0} )    
+    end
+
     local function toCounter() -- 카운터화면으로 이동
         composer.gotoScene("counter")
     end
@@ -96,7 +100,7 @@ function scene:create( event )
     function calcIG() -- 재료 계산
         money = money - 80
         leftUI[2].text = string.format("%d원", money)
-        calcCook()
+        calcCook() -- cook에서 계산하는 것들이 counter에서도 적용이 되게
     end
     
     local function delAll() -- 조리대 위 음식 모두 삭제
@@ -134,6 +138,7 @@ function scene:create( event )
     rightUI[1]:addEventListener("tap", toCounter)
     for i = 1, 5, 1 do IG[i]:addEventListener("tap", putIG) end
     for i = 1, 5, 1 do IG[i]:addEventListener("tap", calcIG) end
+    for i = 1, 5, 1 do IG[i]:addEventListener("tap", playCalcIGMusic) end
     gameUI[1]:addEventListener("tap", makeKimbap)
     gameUI[2]:addEventListener("tap", delAll)
 

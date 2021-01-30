@@ -14,6 +14,12 @@ math.randomseed(os.time())
 local widget = require("widget")
 local physics = require("physics")
 
+-- 음악
+local backgroundMusic = audio.loadStream( "music/counter.mp3" )
+local clickMusic = audio.loadStream( "music/click.mp3" )
+local calcKimbapMusic = audio.loadStream( "music/calcKimbap.mp3" )
+
+local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=0, fadein=2000 } )
 -- 변수
 money = 0
 
@@ -54,10 +60,10 @@ function scene:create( event )
 
 	gameUI[1] = display.newImageRect("img/bank.png", 160, 120)
 	gameUI[1].x, gameUI[1].y = display.contentWidth - 130, display.contentHeight - 100
-	gameUI[2] = display.newText("+1000원", display.contentWidth - 130, display.contentHeight - 165, "굴림")
+	gameUI[2] = display.newText("", display.contentWidth - 130, display.contentHeight - 165, "굴림")
 	gameUI[2].size = 30
 	gameUI[2]:setFillColor(0)
-	gameUI[2].alpha = 0
+	gameUI[2].alpha = 1
 	gameUI[3] = display.newImageRect("img/calendar.png", 130, 130)
 	gameUI[3].x, gameUI[3].y = 130, display.contentHeight - 100
 
@@ -90,6 +96,14 @@ function scene:create( event )
 
 
 	-- [[함수]]
+	local function playClickMusic()
+		local clickMusicChannel = audio.play( clickMusic, { channel=2, loops=0} )
+	end
+
+	local function playClacKimbap()
+		local calcKimbapMusicChannel = audio.play( calcKimbapMusic, { channel=3, loops=0} )
+	end
+
 	local function toCook() -- 조리화면으로 이동
 		for i = 1, 2, 1 do kimbap[i].alpha = 0 end -- 조리화면으로 이동하면 카운터에 놓인 김밥은 사라짐
 		composer.setVariable("money", money)
@@ -110,16 +124,21 @@ function scene:create( event )
 		leftUI[4].text = string.format("%d원", money)
 	end
 
+	local function calcBank(m) -- 저금통 계산
+		gameUI[2].text = string.format("+%d원", m)
+		gameUI[2].alpha = 1
+		transition.to(gameUI[2], {time = 1000, alpha = 0})
+	end
+
 	function calcKimbap(event)
 		event.target.alpha = 0
-		
-		if event.target == kimbap[1] then
-			print("1번김밥")
+
+		if event.target == kimbap[1] then -- 1:꼬마김밥일 때
 			money = money + 1500
-			print(money)
+			calcBank(1500)
 			leftUI[4].text = string.format("%d원", money)
 		end
-
+		
 		calcCounter()
 	end
 
@@ -156,8 +175,10 @@ function scene:create( event )
 	rightUI[3]:addEventListener("tap", toCook)
 	orderUI[4]:addEventListener("tap", denyOrder)
 	orderUI[3]:addEventListener("tap", acceptOrder)
+	for i = 3, 4, 1 do orderUI[i]:addEventListener("tap", playClickMusic) end
 	for i = 1, 2, 1 do kimbap[i]:addEventListener("tap", calcKimbap) end
 	for i = 1, 2, 1 do kimbap[i]:addEventListener("tap", delAll) end
+	for i = 1, 2, 1 do kimbap[i]:addEventListener("tap", playClacKimbap) end
 
 	-- 장면 삽입
 	for i = 1, 2, 1 do sceneGroup:insert(background[i]) end
