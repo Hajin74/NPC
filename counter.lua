@@ -17,6 +17,7 @@ local physics = require("physics")
 -- 음악
 local backgroundMusic = audio.loadStream( "music/counter.mp3" )
 local clickMusic = audio.loadStream( "music/click.mp3" )
+local denyMusic = audio.loadStream( "music/deny.wav" )
 local calcKimbapMusic = audio.loadStream( "music/calcKimbap.mp3" )
 
 local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=0, fadein=2000 } )
@@ -26,7 +27,7 @@ money = 0
 -- GUI
 local background = {} -- 1:초등학교, 2:트럭
 local leftUI = {} -- 1:체력, 2:얼굴, 3:금액표시창, 4:금액표시
-local rightUI = {} -- 1:환경설정, 2:레시피토글, 3:화면전환
+local rightUI = {} -- 1:환경설정, 2:레시피토글, 3:화면전환, 4:레시피오픈
 local gameUI = {} -- 1:저금통, 2:저금통금액표시, 3:탁상달력,
 local orderUI = {} -- 1:주문말풍선, 2:주문글, 3:주문수락, 4:주문거절
 local person = {} -- 초등학생1, 초등학생2, 초등학생3
@@ -57,6 +58,10 @@ function scene:create( event )
 	rightUI[2].x, rightUI[2].y = display.contentWidth - 120, 50
 	rightUI[3] = display.newImageRect("img/arrow.png", 70, 70)
 	rightUI[3].x, rightUI[3].y = display.contentWidth - 190, 50
+	rightUI[4] = display.newImageRect("img/recipe_over.png", 300, 200)
+	rightUI[4].x, rightUI[4].y = display.contentWidth - 180, 200
+	rightUI[4].alpha = 0
+	
 
 	gameUI[1] = display.newImageRect("img/bank.png", 160, 120)
 	gameUI[1].x, gameUI[1].y = display.contentWidth - 130, display.contentHeight - 100
@@ -101,8 +106,37 @@ function scene:create( event )
 	end
 
 	local function playClacKimbap()
-		local calcKimbapMusicChannel = audio.play( calcKimbapMusic, { channel=3, loops=0} )
+		local calcKimbapMusicChannel = audio.play( calcKimbapMusic, { channel=2, loops=0} )
 	end
+
+	local function playDenyMusic()
+		local denyMusicChannel = audio.play( denyMusic, { channel=2, loops=0} )
+	end
+
+	local function pauseBG()
+		audio.pause( backgroundMusicChannel)
+	end
+
+	local function openRecipe()
+		playClickMusic()
+		rightUI[4].alpha = 1
+	end
+
+	local function closeRecipe()
+		playClickMusic()
+		rightUI[4].alpha = 0
+	end
+
+	function hp() -- 체력감소함수
+		if leftUI[1].width <= 0 then
+			pauseBG()
+			composer.gotoScene("levelup")
+		end
+		leftUI[1].width = leftUI[1].width - 10
+		leftUI[1].x = leftUI[1].x - 5
+	end
+
+	timer.performWithDelay(1000, hp, 31)
 
 	local function toCook() -- 조리화면으로 이동
 		for i = 1, 2, 1 do kimbap[i].alpha = 0 end -- 조리화면으로 이동하면 카운터에 놓인 김밥은 사라짐
@@ -131,6 +165,7 @@ function scene:create( event )
 	end
 
 	function calcKimbap(event)
+		playClacKimbap()
 		event.target.alpha = 0
 
 		if event.target == kimbap[1] then -- 1:꼬마김밥일 때
@@ -147,10 +182,12 @@ function scene:create( event )
 	end
 
 	local function denyOrder()
+		playDenyMusic()
 		delAll()
 	end
 
 	local function acceptOrder()
+		playClickMusic()
 		for i = 3, 4, 1 do orderUI[i].alpha = 0 end
 		toCook()
 	end
@@ -160,25 +197,19 @@ function scene:create( event )
 		order()
 	end
 
-
-
-
-	
-	
-
-
 	-- 초기화
 	
 	timer.performWithDelay(1000, customer, 1)
 
 	-- 이벤트 등록
+	rightUI[1]:addEventListener("tap", pauseBG)
 	rightUI[3]:addEventListener("tap", toCook)
+	rightUI[2]:addEventListener("tap", openRecipe)
+	rightUI[4]:addEventListener("tap", closeRecipe)
 	orderUI[4]:addEventListener("tap", denyOrder)
 	orderUI[3]:addEventListener("tap", acceptOrder)
-	for i = 3, 4, 1 do orderUI[i]:addEventListener("tap", playClickMusic) end
 	for i = 1, 2, 1 do kimbap[i]:addEventListener("tap", calcKimbap) end
 	for i = 1, 2, 1 do kimbap[i]:addEventListener("tap", delAll) end
-	for i = 1, 2, 1 do kimbap[i]:addEventListener("tap", playClacKimbap) end
 
 	-- 장면 삽입
 	for i = 1, 2, 1 do sceneGroup:insert(background[i]) end
@@ -208,7 +239,6 @@ function scene:hide( event )
 	local phase = event.phase
 
 	if event.phase == "will" then
-
 	elseif phase == "did" then
 	end
 end
