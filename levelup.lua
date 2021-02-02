@@ -9,7 +9,7 @@ local scene = composer.newScene()
 
 ---
 local backgroundMusic = audio.loadStream( "music/levelup.mp3" )
-local backgroundMusicChannel = audio.play( backgroundMusic, { channel=5, loops=0, fadein=2000 } )
+--local backgroundMusicChannel = audio.play( backgroundMusic, { channel=5, loops=0, fadein=2000 } )
 ---
 local background = {}
 local gameUI = {}
