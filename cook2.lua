@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------------------
 --
--- view1.lua
+-- cook2.lua
 --
 -----------------------------------------------------------------------------------------
 
@@ -55,8 +55,13 @@ function scene:create( event )
     IG[3] = display.newImageRect("img/pickledradish1.png", 260, 95)
     IG[4] = display.newImageRect("img/egg1.png", 260, 95)
     IG[5] = display.newImageRect("img/ham1.png", 260, 95)
+    IG[6] = display.newImageRect("img/kimchi.png", 260, 95)
     for i = 2, 5, 1 do
         IG[i].x, IG[i].y = 130, display.contentHeight-45 - (i-2)*145
+        IG[i].name = i
+    end
+    for i = 6, 6, 1 do
+        IG[i].x, IG[i].y = 1130, IG[5].y + (i-6)*30
         IG[i].name = i
     end
     
@@ -68,8 +73,9 @@ function scene:create( event )
     usedIG[3] = display.newImageRect("img/pickledradish2.png", 450, 40)
     usedIG[4] = display.newImageRect("img/egg2.png", 430, 30)
     usedIG[5] = display.newImageRect("img/ham2.png", 430, 30)
-    for i = 3, 5, 1 do usedIG[i].x, usedIG[i].y = display.contentWidth/2 + 35, 550 - 20 * (i - 1) end -- 재료 위치
-    for i = 1, 5, 1 do usedIG[i].alpha = 0 end -- 숨김처리
+    usedIG[6] = display.newImageRect("img/kimchi2.png", 430, 30)
+    for i = 3, 6, 1 do usedIG[i].x, usedIG[i].y = display.contentWidth/2 + 35, 550 - 20 * (i - 1) end -- 재료 위치
+    for i = 1, 6, 1 do usedIG[i].alpha = 0 end -- 숨김처리
 
     -- 완성된 김밥
     kimbap[1] = display.newImageRect("img/kimbap1.png", 500, 150)
@@ -84,19 +90,19 @@ function scene:create( event )
     
     -- [[함수]]
     local function playCalcIGMusic()
-        local calcIGMusicChannel = audio.play( calcIGMusic, { channel=3, loops=0} )    
+        local calcIGMusicChannel = audio.play( calcIGMusic, { channel=4, loops=0} )    
     end
 
     local function playDelAllMusic()
-        local delAllMusicChannel = audio.play(delAllMusic, {channel = 3, loops=0})
+        local delAllMusicChannel = audio.play(delAllMusic, {channel = 4, loops=0})
     end
 
     local function playMakeKimbapMusic()
-        local makeKimbapMusicChannel = audio.play(makeKimbapMusic, {channel = 3, loops = 0})
+        local makeKimbapMusicChannel = audio.play(makeKimbapMusic, {channel = 4, loops = 0})
     end
 
     local function toCounter() -- 카운터화면으로 이동
-        composer.gotoScene("counter")
+        composer.gotoScene("counter2")
     end
     
     local function putIG(event) -- 재료 쓰기
@@ -119,8 +125,8 @@ function scene:create( event )
 
         gameUI[3].alpha = 0
         for i = 1, 2, 1 do kimbap[i].alpha = 0 end
-        for i = 1, 5, 1 do usedIG[i].alpha = 0 end
-        for i = 1, 5, 1 do 
+        for i = 1, 6, 1 do usedIG[i].alpha = 0 end
+        for i = 1, 6, 1 do 
             IG[i]:addEventListener("tap", putIG) 
             IG[i]:addEventListener("tap", calcIG) 
         end
@@ -130,20 +136,26 @@ function scene:create( event )
     local function makeKimbap()
         playMakeKimbapMusic()
 
-        for i = 1, 5, 1 do -- 일단 김밥을 말면 재료를 놓지도, 재료소진으로 인한 가격소진도 없음
+        for i = 1, 6, 1 do -- 일단 김밥을 말면 재료를 놓지도, 재료소진으로 인한 가격소진도 없음
             IG[i]:removeEventListener("tap", putIG) 
             IG[i]:removeEventListener("tap", calcIG)
         end 
 
         -- 꼬마김밥: 김, 밥, 달걀, 단무지, 햄
-        if (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1) then
+        if (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1 and usedIG[6].alpha == 0) then
             for i = 1, 5, 1 do usedIG[i].alpha = 0 end
             kimbap[1].alpha = 1
             kimbap[1]:addEventListener("tap", putKimbap)
             kimbap[1]:addEventListener("tap", toCounter)
             kimbap[1]:addEventListener("tap", delAll)
+        elseif (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1 and usedIG[6].alpha == 1) then
+            for i = 1, 6, 1 do usedIG[i].alpha = 0 end
+            kimbap[2].alpha = 1
+            kimbap[2]:addEventListener("tap", putKimbap)
+            kimbap[2]:addEventListener("tap", toCounter)
+            kimbap[2]:addEventListener("tap", delAll)
         else
-            for i = 1, 5, 1 do usedIG[i].alpha = 0 end
+            for i = 1, 6, 1 do usedIG[i].alpha = 0 end
             gameUI[3].alpha = 1
         end 
     end
@@ -151,8 +163,8 @@ function scene:create( event )
 
     -- 이벤트 등록
     rightUI[1]:addEventListener("tap", toCounter)
-    for i = 1, 5, 1 do IG[i]:addEventListener("tap", putIG) end
-    for i = 1, 5, 1 do IG[i]:addEventListener("tap", calcIG) end
+    for i = 1, 6, 1 do IG[i]:addEventListener("tap", putIG) end
+    for i = 1, 6, 1 do IG[i]:addEventListener("tap", calcIG) end
     gameUI[1]:addEventListener("tap", makeKimbap)
     gameUI[2]:addEventListener("tap", delAll)
 
@@ -161,10 +173,10 @@ function scene:create( event )
     sceneGroup:insert(background)
     sceneGroup:insert(rightUI[1])
     for i = 1, 2, 1 do sceneGroup:insert(leftUI[i]) end
-    for i = 1, 5, 1 do sceneGroup:insert(IG[i]) end
+    for i = 1, 6, 1 do sceneGroup:insert(IG[i]) end
     sceneGroup:insert(usedIG[2])
     sceneGroup:insert(usedIG[1])
-    for i = 3, 5, 1 do sceneGroup:insert(usedIG[i]) end
+    for i = 3, 6, 1 do sceneGroup:insert(usedIG[i]) end
     for i = 1, 3, 1 do sceneGroup:insert(gameUI[i]) end
     for i = 1, 2, 1 do sceneGroup:insert(kimbap[i]) end
 end
@@ -189,7 +201,7 @@ function scene:hide( event )
 	
 	if event.phase == "will" then
 		-- Called when the scene is on screen and is about to move off screen
-		composer.removeScene("cook")
+		composer.removeScene("cook2")
 		-- INSERT code here to pause the scene
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
 	elseif phase == "did" then
