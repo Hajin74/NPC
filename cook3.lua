@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------------------
 --
--- cook2.lua
+-- cook3.lua
 --
 -----------------------------------------------------------------------------------------
 
@@ -144,13 +144,14 @@ function scene:create( event )
         end 
 
         -- 꼬마김밥: 김, 밥, 달걀, 단무지, 햄
-        if (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1 and usedIG[6].alpha == 0) then
+        if (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1) then
             for i = 1, 5, 1 do usedIG[i].alpha = 0 end
             kimbap[1].alpha = 1
             kimbap[1]:addEventListener("tap", putKimbap)
             kimbap[1]:addEventListener("tap", toCounter)
             kimbap[1]:addEventListener("tap", delAll)
 
+        -- 김치김밥: 김, 밥, 달걀, 단무지, 햄, 김치
         elseif (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1 and usedIG[6].alpha == 1) then
             for i = 1, 6, 1 do usedIG[i].alpha = 0 end
             kimbap[2].alpha = 1
@@ -158,7 +159,8 @@ function scene:create( event )
             kimbap[2]:addEventListener("tap", toCounter)
             kimbap[2]:addEventListener("tap", delAll)
 
-        elseif (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1 and usedIG[6].alpha == 0 and usedIG[7].alpha == 1) then
+        -- 참치김밥; 김, 밥, 달걀, 단무지, 햄, 참치
+        elseif (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1 and usedIG[7].alpha == 0) then 
             for i = 1, 7, 1 do usedIG[i].alpha = 0 end
             kimbap[3].alpha = 1
             kimbap[3]:addEventListener("tap", putKimbap)
@@ -166,7 +168,7 @@ function scene:create( event )
             kimbap[3]:addEventListener("tap", delAll)
 
         else
-            for i = 1, 6, 1 do usedIG[i].alpha = 0 end
+            for i = 1, 7, 1 do usedIG[i].alpha = 0 end
             gameUI[3].alpha = 1
         end 
     end

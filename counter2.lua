@@ -23,6 +23,7 @@ local calcKimbapMusic = audio.loadStream( "music/calcKimbap.mp3" )
 local backgroundMusicChannel = audio.play( backgroundMusic, { channel=2, loops=0, fadein=2000 } )
 -- 변수
 money = composer.getVariable("score")
+money = 3008
 local currentstage = 2
 
 -- GUI

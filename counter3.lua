@@ -160,7 +160,8 @@ function scene:create( event )
 		timer.performWithDelay(1500, customer, 1)
 	end
 
-	function putKimbap(event) -- cook scene에서도 쓸 수 있게 local이 아닌 전역 함수
+	function putKimbap(event) 
+		print("카운터 풋 김밥")
 		kimbap[event.target.name].alpha = 1
 	end
 
@@ -265,7 +266,7 @@ function scene:hide( event )
 	local phase = event.phase
 
     if event.phase == "will" then
-        composer.removeScene("counter3")
+        --composer.removeScene("counter3")
 	elseif phase == "did" then
 	end
 end

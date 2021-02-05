@@ -212,7 +212,7 @@ function scene:hide( event )
     local phase = event.phase
 
     if event.phase == "will" then
-        composer.removeScene("map")
+        --composer.removeScene("map")
         -- e.g. stop timers, stop animation, unload sounds, etc.)
     elseif phase == "did" then
     end

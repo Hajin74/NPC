@@ -17,9 +17,9 @@ local background -- 주방화면
 local leftUI = {} -- 1: 금액표시창, 2:금액표시
 local rightUI = {} -- 1:화면전환
 local gameUI = {} -- 1:김밥말기, 2:버리기, 3:김밥을 쌀 수 없습니다.
-local IG = {} -- 밥, 김, 달걀, 단무지, 햄
-local usedIG = {} -- 밥, 김, 달걀, 단무지, 햄
-local kimbap = {} -- 1:꼬마김밥, 2:다른김밥
+local IG = {} -- 밥, 김, 달걀, 단무지, 햄, 김치
+local usedIG = {} -- 밥, 김, 달걀, 단무지, 햄, 김치
+local kimbap = {} -- 1:꼬마김밥, 2:김치김밥
 
 
 function scene:create( event )
@@ -141,7 +141,7 @@ function scene:create( event )
         end 
 
         -- 꼬마김밥: 김, 밥, 달걀, 단무지, 햄
-        if (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1 and usedIG[6].alpha == 0) then
+        if (usedIG[1].alpha == 1 and usedIG[2].alpha == 1 and usedIG[3].alpha == 1 and usedIG[4].alpha == 1 and usedIG[5].alpha == 1) then
             for i = 1, 5, 1 do usedIG[i].alpha = 0 end
             kimbap[1].alpha = 1
             kimbap[1]:addEventListener("tap", putKimbap)
