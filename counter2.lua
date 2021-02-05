@@ -22,7 +22,8 @@ local calcKimbapMusic = audio.loadStream( "music/calcKimbap.mp3" )
 
 local backgroundMusicChannel = audio.play( backgroundMusic, { channel=2, loops=0, fadein=2000 } )
 -- 변수
-money = 0
+money = composer.getVariable("score")
+local currentstage = 2
 
 -- GUI
 local background = {} -- 1:초등학교, 2:트럭
@@ -133,7 +134,9 @@ function scene:create( event )
 	function hp() -- 체력감소함수
 		if leftUI[1].width <= 0 then
 			pauseBG()
-			composer.gotoScene("levelup")
+			composer.setVariable("currentstage", currentstage)
+			composer.setVariable("money", money)
+			composer.gotoScene("map")
 		end
 		leftUI[1].width = leftUI[1].width - 10
 		leftUI[1].x = leftUI[1].x - 5
@@ -253,7 +256,7 @@ function scene:hide( event )
 	local phase = event.phase
 
     if event.phase == "will" then
-        composer.removeScene("levelup")
+        composer.removeScene("map")
 	elseif phase == "did" then
 	end
 end

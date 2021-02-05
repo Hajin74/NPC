@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------------------
 --
--- counter.lua
+-- counter2.lua
 --
 -----------------------------------------------------------------------------------------
 
@@ -20,24 +20,25 @@ local clickMusic = audio.loadStream( "music/click.mp3" )
 local denyMusic = audio.loadStream( "music/deny.wav" )
 local calcKimbapMusic = audio.loadStream( "music/calcKimbap.mp3" )
 
-local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=0, fadein=2000 } )
+local backgroundMusicChannel = audio.play( backgroundMusic, { channel=2, loops=0, fadein=2000 } )
 -- 변수
-local currentstage = 1
-money = 0
+money = composer.getVariable("score")
+money = 8000
+local currentstage = 3
 
 -- GUI
 local background = {} -- 1:초등학교, 2:트럭
 local leftUI = {} -- 1:체력, 2:얼굴, 3:금액표시창, 4:금액표시
 local rightUI = {} -- 1:환경설정, 2:레시피토글, 3:화면전환, 4:레시피오픈
 local gameUI = {} -- 1:저금통, 2:저금통금액표시
-local orderUI = {} -- 1:주문말풍선, 2:주문글, 3:주문수락, 4:주문거절
+local orderUI = {} -- 1:주문말풍선, 2:주문수락, 3:주문거절, 4:꼬마김밥주문, 5:김치김밥주문
 local person = {} -- 초등학생1, 초등학생2, 초등학생3
 local kimbap = {}
 
 function scene:create( event )
 	local sceneGroup = self.view
 
-	background[1] = display.newImageRect("img/elementaryschool.png", 1250, 460)
+	background[1] = display.newImageRect("img/highschool.png", 1250, 460)
 	background[1].x, background[1].y = display.contentWidth/2, 290
 	background[2] = display.newImageRect("img/truck.png", display.contentWidth, display.contentHeight)
 	background[2].x, background[2].y = display.contentWidth/2, display.contentHeight/2
@@ -45,7 +46,7 @@ function scene:create( event )
 	leftUI[1] = display.newImageRect("img/hp.png", 300, 30)
 	leftUI[1].x, leftUI[1].y = 220, 40
 	leftUI[2] = display.newImageRect("img/mara.png", 60, 60)
-	leftUI[2].x, leftUI[2].y = 60, 40
+	leftUI[2].x, leftUI[2].y = 50, 40
 	leftUI[3] = display.newImageRect("img/money.png", 350, 60)
 	leftUI[3].x, leftUI[3].y = 200, 100
 	leftUI[4] = display.newText("0원", 180, 107, "굴림")
@@ -73,26 +74,34 @@ function scene:create( event )
 
 	orderUI[1] = display.newImageRect("img/bubble.png", 500, 250)
 	orderUI[1].x, orderUI[1].y = 850, 250
-	orderUI[2] = display.newText("마라선생님! \n꼬마김밥 주세요.", 850, 220, "굴림")
-	orderUI[2].size = 30
-	orderUI[2]:setFillColor(0)
-	orderUI[3] = display.newImageRect("img/accept.png", 110, 50)
-	orderUI[3].x, orderUI[3].y = 780, 300
-	orderUI[4] = display.newImageRect("img/deny.png", 110, 45)
-	orderUI[4].x, orderUI[4].y = 900, 301
-	for i = 1, 4, 1 do orderUI[i].alpha = 0 end
+	orderUI[2] = display.newImageRect("img/accept.png", 110, 50) 
+	orderUI[2].x, orderUI[2].y = 780, 300
+	orderUI[3] = display.newImageRect("img/deny.png", 110, 45)
+    orderUI[3].x, orderUI[3].y = 900, 301
+    -- 김밥 주문 종류
+	orderUI[4] = display.newText("마라선생님! \n꼬마김밥 주세요.", 850, 220, "굴림")
+	orderUI[4].size = 30
+	orderUI[4]:setFillColor(0)
+	orderUI[5] = display.newText("매운게 땡기는 날이야.\n김치김밥 주세요!", 850, 220, "굴림")
+	orderUI[5].size = 30
+    orderUI[5]:setFillColor(0)
+    orderUI[6] = display.newText("참치김밥 먹고싶다!", 850, 220, "굴림")
+	orderUI[6].size = 30
+	orderUI[6]:setFillColor(0)
+	for i = 1, 6, 1 do orderUI[i].alpha = 0 end
 
-	person[1] = display.newImageRect("img/person1.png", 175, 205)
-	person[2] = display.newImageRect("img/person2.png", 175, 205)
-	person[3] = display.newImageRect("img/person3.png", 175, 205)
+	person[1] = display.newImageRect("img/person1.png", 200, 205)
+	person[2] = display.newImageRect("img/person2.png", 200, 205)
+	person[3] = display.newImageRect("img/person3.png", 200, 205)
 	for i = 1, 3, 1 do 
 		person[i].x, person[i].y = 500, 418
 		person[i].alpha = 0 
 	end
 
-	kimbap[1] = display.newImageRect("img/kimbap.png", 300, 100)
-	kimbap[2] = display.newImageRect("img/kimbap2.png", 300, 100)
-	for i = 1, 2, 1 do
+	kimbap[1] = display.newImageRect("img/kimbap1.png", 300, 100)
+    kimbap[2] = display.newImageRect("img/kimbap2.png", 300, 100)
+    kimbap[3] = display.newImageRect("img/kimbap3.png", 300, 100)
+	for i = 1, 3, 1 do
 		kimbap[i].x, kimbap[i].y = display.contentWidth/2, display.contentHeight - 100
 		kimbap[i].alpha = 0
 		kimbap[i].name = i
@@ -101,15 +110,15 @@ function scene:create( event )
 
 	-- [[함수]]
 	local function playClickMusic()
-		local clickMusicChannel = audio.play( clickMusic, { channel=3, loops=0} )
+		local clickMusicChannel = audio.play( clickMusic, { channel=2, loops=0} )
 	end
 
 	local function playClacKimbap()
-		local calcKimbapMusicChannel = audio.play( calcKimbapMusic, { channel=3, loops=0} )
+		local calcKimbapMusicChannel = audio.play( calcKimbapMusic, { channel=2, loops=0} )
 	end
 
 	local function playDenyMusic()
-		local denyMusicChannel = audio.play( denyMusic, { channel=3, loops=0} )
+		local denyMusicChannel = audio.play( denyMusic, { channel=2, loops=0} )
 	end
 
 	local function pauseBG()
@@ -129,8 +138,6 @@ function scene:create( event )
 	function hp() -- 체력감소함수
 		if leftUI[1].width <= 0 then
 			pauseBG()
-			for i = 1, 4, 1 do leftUI[i].alpha = 0 end
-			for i = 1, 4, 1 do rightUI[i].alpha = 0 end
 			composer.setVariable("currentstage", currentstage)
 			composer.setVariable("money", money)
 			composer.gotoScene("map")
@@ -142,13 +149,13 @@ function scene:create( event )
 	timer.performWithDelay(1000, hp, 31)
 
 	local function toCook() -- 조리화면으로 이동
-		for i = 1, 2, 1 do kimbap[i].alpha = 0 end -- 조리화면으로 이동하면 카운터에 놓인 김밥은 사라짐
+		for i = 1, 3, 1 do kimbap[i].alpha = 0 end -- 조리화면으로 이동하면 카운터에 놓인 김밥은 사라짐
 		composer.setVariable("money", money)
-		composer.gotoScene("cook")
+		composer.gotoScene("cook3")
 	end
 
 	local function delAll() -- 주문 거절 시 모든게 사라졌다가 1.5초후에 다시 등장
-		for i = 1, 4, 1 do orderUI[i].alpha = 0 end
+		for i = 1, 6, 1 do orderUI[i].alpha = 0 end
 		for i = 1, 3, 1 do person[i].alpha = 0 end
 		timer.performWithDelay(1500, customer, 1)
 	end
@@ -168,20 +175,36 @@ function scene:create( event )
 	end
 
 	function calcKimbap(event)
-		playClacKimbap()
 		event.target.alpha = 0
 
-		if event.target == kimbap[1] then -- 1:꼬마김밥일 때
+		if orderUI[4].alpha == 1 and event.target == kimbap[1] then -- 1:꼬마김밥일 때
+			playClacKimbap()
 			money = money + 1500
 			calcBank(1500)
 			leftUI[4].text = string.format("%d원", money)
+		elseif orderUI[5].alpha == 1 and event.target == kimbap[2] then -- 2:김치김밥일 때
+			playClacKimbap()
+			money = money + 2500
+			calcBank(2500)
+            leftUI[4].text = string.format("%d원", money)
+        elseif orderUI[6].alpha == 1 and event.target == kimbap[3] then -- 3:참치김밥일 때
+            playClacKimbap()
+			money = money + 3000
+			calcBank(3000)
+            leftUI[4].text = string.format("%d원", money)
+		else
+            print("메뉴 틀림")
+            playDenyMusic()
+            leftUI[1].width = leftUI[1].width - 20
+            leftUI[1].x = leftUI[1].x - 10
 		end
 		
 		calcCounter()
 	end
 
 	local function order() -- 주문창, 주문내용, 수락/거절 버튼 뜸
-		for i = 1, 4, 1 do orderUI[i].alpha = 1 end
+		for i = 1, 3, 1 do orderUI[i].alpha = 1 end
+		orderUI[math.random(4,6)].alpha = 1
 	end
 
 	local function denyOrder()
@@ -191,7 +214,7 @@ function scene:create( event )
 
 	local function acceptOrder()
 		playClickMusic()
-		for i = 3, 4, 1 do orderUI[i].alpha = 0 end
+		for i = 2, 3, 1 do orderUI[i].alpha = 0 end
 		toCook()
 	end
 
@@ -209,10 +232,10 @@ function scene:create( event )
 	rightUI[3]:addEventListener("tap", toCook)
 	rightUI[2]:addEventListener("tap", openRecipe)
 	rightUI[4]:addEventListener("tap", closeRecipe)
-	orderUI[4]:addEventListener("tap", denyOrder)
-	orderUI[3]:addEventListener("tap", acceptOrder)
-	for i = 1, 2, 1 do kimbap[i]:addEventListener("tap", calcKimbap) end
-	for i = 1, 2, 1 do kimbap[i]:addEventListener("tap", delAll) end
+	orderUI[3]:addEventListener("tap", denyOrder)
+	orderUI[2]:addEventListener("tap", acceptOrder)
+	for i = 1, 3, 1 do kimbap[i]:addEventListener("tap", calcKimbap) end
+	for i = 1, 3, 1 do kimbap[i]:addEventListener("tap", delAll) end
 
 	-- 장면 삽입
 	for i = 1, 2, 1 do sceneGroup:insert(background[i]) end
@@ -221,8 +244,8 @@ function scene:create( event )
 	for i = 1, 3, 1 do sceneGroup:insert(person[i]) end
 	sceneGroup:insert(leftUI[3])
 	sceneGroup:insert(leftUI[4])
-	for i = 1, 2, 1 do sceneGroup:insert(kimbap[i]) end
-	for i = 1, 4, 1 do sceneGroup:insert(orderUI[i]) end
+	for i = 1, 3, 1 do sceneGroup:insert(kimbap[i]) end
+	for i = 1, 6, 1 do sceneGroup:insert(orderUI[i]) end
 end
 
 
@@ -241,7 +264,8 @@ function scene:hide( event )
 	local sceneGroup = self.view
 	local phase = event.phase
 
-	if event.phase == "will" then
+    if event.phase == "will" then
+        composer.removeScene("counter3")
 	elseif phase == "did" then
 	end
 end

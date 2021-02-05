@@ -72,7 +72,7 @@ function scene:create( event )
     for i = 1, 5, 1 do usedIG[i].alpha = 0 end -- 숨김처리
 
     -- 완성된 김밥
-    kimbap[1] = display.newImageRect("img/kimbap1.png", 500, 150)
+    kimbap[1] = display.newImageRect("img/kimbap.png", 500, 150)
     kimbap[2] = display.newImageRect("img/kimbap2.png", 500, 150)
     for i = 1, 2, 1 do
         kimbap[i].x, kimbap[i].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
