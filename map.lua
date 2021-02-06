@@ -68,17 +68,22 @@ function scene:create(event)
         for i = 1, 2, 1 do text[i].alpha = 0 end
 
         if stage == 1 then
+            composer.removeScene("counter")
             composer.gotoScene("counter")
         elseif stage == 2 then
+            composer.removeScene("counter2")
             composer.setVariable("score", score)
             composer.gotoScene("counter2")
         elseif stage == 3 then
+            composer.removeScene("counter3")
             composer.setVariable("score", score)
             composer.gotoScene("counter3")
         elseif stage == 4 then
+            composer.removeScene("counter4")
             composer.setVariable("score", score)
             composer.gotoScene("counter4")
         elseif stage == 5 then
+            composer.removeScene("counter5")
             composer.setVariable("score", score)
             composer.gotoScene("counter5")
         elseif stage == 6 then
