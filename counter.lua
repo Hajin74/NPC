@@ -15,12 +15,13 @@ local widget = require("widget")
 local physics = require("physics")
 
 -- 음악
-local backgroundMusic = audio.loadStream( "music/counter.mp3" )
+audio.pause( startCh ) -- 오프닝 노래 끄기
+local counter = audio.loadStream( "music/counter.ogg" ) -- 카운터배경
+local counterCh = audio.play( counter, { channel=1, loops=0, fadein=4000 } )
 local clickMusic = audio.loadStream( "music/click.mp3" )
 local denyMusic = audio.loadStream( "music/deny.wav" )
 local calcKimbapMusic = audio.loadStream( "music/calcKimbap.mp3" )
 
-local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=0, fadein=2000 } )
 -- 변수
 local currentstage = 1
 money = 0
@@ -105,15 +106,15 @@ function scene:create( event )
 	end
 
 	local function playClacKimbap()
-		local calcKimbapMusicChannel = audio.play( calcKimbapMusic, { channel=3, loops=0} )
+		local calcKimbapMusicChannel = audio.play( calcKimbapMusic, { channel=4, loops=0} )
 	end
 
 	local function playDenyMusic()
-		local denyMusicChannel = audio.play( denyMusic, { channel=3, loops=0} )
+		local denyMusicChannel = audio.play( denyMusic, { channel=5, loops=0} )
 	end
 
 	local function pauseBG()
-		audio.pause( backgroundMusicChannel)
+		audio.pause(counterCh)
 	end
 
 	local function openRecipe()

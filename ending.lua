@@ -7,6 +7,13 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 local defaultField
+
+-- 음악
+audio.stop( mapCh )  -- 맵 노래 끄기
+audio.stop( counterCh )  -- 맵 노래 끄기
+local ending = audio.loadStream("music/ending.wav")
+local endingCh = audio.play(ending, { channel=23, loops=0, fadein=2000 })
+
 function scene:create( event )
 	local sceneGroup = self.view
 	

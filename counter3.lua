@@ -15,14 +15,17 @@ local widget = require("widget")
 local physics = require("physics")
 
 -- 음악
-local backgroundMusic = audio.loadStream( "music/counter.mp3" )
+audio.stop( mapCh )  -- 맵 노래 끄기
+local counter = audio.loadStream( "music/counter.ogg" ) -- 카운터배경
+local counterCh = audio.play( counter, { channel=7, loops=0, fadein=4000 })
+
 local clickMusic = audio.loadStream( "music/click.mp3" )
 local denyMusic = audio.loadStream( "music/deny.wav" )
 local calcKimbapMusic = audio.loadStream( "music/calcKimbap.mp3" )
 
-local backgroundMusicChannel = audio.play( backgroundMusic, { channel=1, loops=0, fadein=2000 } )
 -- 변수
 money = composer.getVariable("score")
+--money = 8000
 local currentstage = 3
 
 -- GUI
@@ -89,11 +92,11 @@ function scene:create( event )
 	orderUI[6]:setFillColor(0)
 	for i = 1, 6, 1 do orderUI[i].alpha = 0 end
 
-	person[1] = display.newImageRect("img/person1.png", 175, 205)
-	person[2] = display.newImageRect("img/person2.png", 175, 205)
-	person[3] = display.newImageRect("img/person3.png", 175, 205)
+	person[1] = display.newImageRect("img/hperson1.png", 220, 250)
+	person[2] = display.newImageRect("img/hperson2.png", 220, 250)
+	person[3] = display.newImageRect("img/hperson3.png", 220, 250)
 	for i = 1, 3, 1 do 
-		person[i].x, person[i].y = 500, 418
+		person[i].x, person[i].y = 500, 395
 		person[i].alpha = 0 
 	end
 
@@ -109,19 +112,19 @@ function scene:create( event )
 
 	-- [[함수]]
 	local function playClickMusic()
-		local clickMusicChannel = audio.play( clickMusic, { channel=2, loops=0} )
+		local clickMusicChannel = audio.play( clickMusic, { channel=3, loops=0} )
 	end
 
 	local function playClacKimbap()
-		local calcKimbapMusicChannel = audio.play( calcKimbapMusic, { channel=2, loops=0} )
+		local calcKimbapMusicChannel = audio.play( calcKimbapMusic, { channel=4, loops=0} )
 	end
 
 	local function playDenyMusic()
-		local denyMusicChannel = audio.play( denyMusic, { channel=2, loops=0} )
+		local denyMusicChannel = audio.play( denyMusic, { channel=5, loops=0} )
 	end
 
 	local function pauseBG()
-		audio.pause( backgroundMusicChannel)
+		audio.pause( counterCh)
 	end
 
 	local function openRecipe()

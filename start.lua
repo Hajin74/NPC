@@ -7,10 +7,15 @@
 local composer = require( "composer" )
 local scene = composer.newScene()
 
+-- 음악
+start = audio.loadStream( "music/forest.mp3" )
+startCh = audio.play( start, { channel=10, loops=0} )
+
 
 function scene:create( event )
 	local sceneGroup = self.view
     
+	
     local background = display.newImage("img/startBG.png")
     background.x, background.y = display.contentWidth/2, display.contentHeight/2
 

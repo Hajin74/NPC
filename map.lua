@@ -14,6 +14,14 @@ print(score)
 local currentstage = composer.getVariable("currentstage", currentstage)
 local stage
 
+-- 음악
+
+    audio.pause( counterCh ) -- 스테이지 노래 끄기
+    map = audio.loadStream( "music/levelup.mp3" ) -- 카운터배경
+    mapCh = audio.play( map, { channel=2, loops=0, fadein=4000 } )
+    --audio.play( map, { channel=2, loops=0, fadein=4000 } )
+
+
 -- CUI 요소 선언
 local background
 local road = {}
@@ -55,7 +63,7 @@ function scene:create(event)
     text[1].text = string.format("와! %d원이나 벌었어.\n내 꿈에 더 가까워지고 있군.", score)
     
     text[2] = display.newText("dd", display.contentWidth/2, 550, "굴림")
-    text[2].text = string.format("장사가 쉬운 일이 아니구나..\n겨우 %d원 가지고는 아무것도 못하지.\n힘내서 내일 다시 열심히 장사해야 겠다.", score)
+    text[2].text = string.format("이런, 오늘은 조금 목표와 멀어진 기분이야. 다시 한번 시도해보자", score)
 
     for i = 1, 2, 1 do 
         text[i].size = 50
@@ -172,7 +180,7 @@ function scene:create(event)
             if score > 15000 then -- 스테이지5 성공
                 text[1].alpha = 1
                 stage = 6
-                timer.performWithDelay(3000, moveScene)
+                timer.performWithDelay(1000, moveScene)
             else
                 text[2].alpha = 1
                 stage = 5
