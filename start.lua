@@ -11,6 +11,10 @@ local scene = composer.newScene()
 local background = {}
 local gameUI = {} -- 게임방법, 게임시작
 
+-- 음악
+local bgm = audio.loadStream( "music/forest.mp3" )
+local bgmch = audio.play( bgm, { channel=1, loops=1, fadein=2000 } )
+
 function scene:create( event )
 	local sceneGroup = self.view
 	

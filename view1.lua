@@ -13,6 +13,10 @@ math.randomseed(os.time())
 -- 버튼 라이브러리
 local widget = require("widget")
 
+-- 음악
+local touch = audio.loadStream( "music/click.mp3" )
+
+
 -- 변수 선언
 local background
 local ms = 1000 -- 벌레 생성 시간
@@ -49,6 +53,12 @@ function scene:create( event )
 		gameUI[2].text = string.format("%02d초", time)
 	end
 
+	-- 음악 함수
+	local function playtouch()
+		local touchch = audio.play( touch, { channel=2, loops=0} )
+	end
+
+
 	-- 게임 종료 함수
 	local function resultEvent()
 		composer.setVariable("score", score)
@@ -57,6 +67,7 @@ function scene:create( event )
 
 	-- 벌레 삭제 함수
 	local function clickEvent(event)
+		playtouch()
 		transition.to(event.target, {time = 200, alpha = 0}) -- 클릭하면 벌레가 별로 바뀜
 		score = score + 10 -- 점수가 올라감
 		if score == 1430 then
@@ -142,7 +153,7 @@ function scene:create( event )
 	timer.performWithDelay(ms, makeEvent, 10)
 	timer.performWithDelay(5000, makeCatEvent, 6)
 	timer.performWithDelay(1000, timeEvent, 30)
-	timer.performWithDelay(3000, resultEvent, 1)
+	timer.performWithDelay(30000, resultEvent, 1)
 	
 	--1430점 되거나 30초 끝나면 종료 후, 게임 종료 화면으로 이동
 	
@@ -179,7 +190,7 @@ function scene:hide( event )
 	
 	if event.phase == "will" then
 		-- Called when the scene is on screen and is about to move off screen
-		--
+		composer.removeScene("view1")
 		-- INSERT code here to pause the scene
 		-- e.g. stop timers, stop animation, unload sounds, etc.)
 	elseif phase == "did" then
