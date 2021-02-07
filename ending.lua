@@ -17,7 +17,7 @@ local endingCh = audio.play(ending, { channel=23, loops=0, fadein=2000 })
 function scene:create( event )
 	local sceneGroup = self.view
 	
-	local background = display.newImageRect( "img/main_BG.png", display.contentWidth, display.contentHeight )
+	local background = display.newImageRect( "img/ending.png", display.contentWidth, display.contentHeight )
 	background.alpha = 1
     background.x = display.contentWidth/2
     background.y = display.contentHeight/2
@@ -70,11 +70,6 @@ function scene:create( event )
     for i=1, 3, 1 do
         building[i].alpha = 1
     end
-    --게임 제목
-    local title = display.newImageRect("img/title.png", display.contentWidth, display.contentHeight)
-    title.alpha = 0
-    title.x = display.contentWidth/2
-    title.y = display.contentHeight/2
 
     local contract = display.newImageRect("img/contract.png", 271, 204)
     contract.alpha = 0
@@ -123,10 +118,10 @@ function scene:create( event )
                 for i=1, 3, 1 do
                     building[i].alpha = 0
                 end
-                building[index].x, building[index].y = display.contentWidth/2 - 410 + 500, display.contentHeight/2-48
+                building[index].x, building[index].y = display.contentWidth - 225, display.contentHeight - 236
             
-                building[index].width = 428+50
-                building[index].height = 441+50
+                building[index].width = 300
+                building[index].height = 300
                 building[index].alpha =1
                 
                 board.alpha = 1
@@ -139,8 +134,6 @@ function scene:create( event )
                 local Btext = display.newText( event.target.text, board.x-10, board.y-15, "배달의민족 한나체 pro", 60 )
                 Btext:setFillColor(0)
                 Btext.align =  "center"
-
-                title.alpha = 1
 
                 local num = 10
                 function scaleUP(event)
