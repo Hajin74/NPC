@@ -10,13 +10,14 @@ local scene = composer.newScene()
 
 -- 변수 받기
 local score = composer.getVariable("money", money)
+local textScore = composer.getVariable("textScore")
 print(score)
 local currentstage = composer.getVariable("currentstage", currentstage)
 local stage
 
 -- 음악
 
-    audio.pause( counterCh ) -- 스테이지 노래 끄기
+    audio.stop( counterCh ) -- 스테이지 노래 끄기
     map = audio.loadStream( "music/levelup.mp3" ) -- 카운터배경
     mapCh = audio.play( map, { channel=2, loops=0, fadein=4000 } )
     --audio.play( map, { channel=2, loops=0, fadein=4000 } )
@@ -24,8 +25,10 @@ local stage
 
 -- CUI 요소 선언
 local background
+local talkBG
 local road = {}
 local truck = {}
+local spot = {}
 local kimbap = {}
 local btn = {}
 local text = {}
@@ -38,6 +41,14 @@ function scene:create(event)
     -- 배경화면
     background = display.newImageRect("img/mapImage.png", display.contentWidth, display.contentHeight)
     background.x, background.y = display.contentWidth/2, display.contentHeight/2
+    talkBG = display.newImageRect("img/talk_20.png", 1150, 260)
+    talkBG.x, talkBG.y = display.contentWidth/2, 592
+
+    -- 빈 스테이지 표시
+    for i = 1, 5, 1 do
+        spot[i] = display.newImageRect("img/spot.png", 140, 140)
+        spot[i].x, spot[i].y = display.contentWidth/2 - 267 -267.564216 + (267.564216 * (i-1)) , display.contentHeight/2 - 2
+    end
 
     -- 김밥 스탬프
     for i = 1, 5, 1 do
@@ -59,13 +70,14 @@ function scene:create(event)
     end
 
     -- 텍스트
-    text[1] = display.newText("dd", display.contentWidth/2, 550, "굴림")
+    text[1] = display.newText("dd", display.contentWidth/2, 570, "굴림")
     text[1].text = string.format("와! %d원이나 벌었어.\n내 꿈에 더 가까워지고 있군.", score)
     
-    text[2] = display.newText("dd", display.contentWidth/2, 550, "굴림")
-    text[2].text = string.format("이런, 오늘은 조금 목표와 멀어진 기분이야. 다시 한번 시도해보자", score)
+    text[2] = display.newText("dd", display.contentWidth/2 + 50, 590, "굴림")
+    text[2].text = string.format("이런...\n오늘은 조금 목표와 멀어진 기분이야.\n다시 한번 시도해보자", score)
 
     for i = 1, 2, 1 do 
+        text[i]:setFillColor(0)
         text[i].size = 50
         text[i].alpha = 0 
     end
@@ -112,7 +124,7 @@ function scene:create(event)
         if currentstage == 1 then -- 스테이지1: 초등학교
             kimbap[1].alpha = 1
             
-            if score > 2000 then -- 스테이지1 성공
+            if score > 3300 then -- 스테이지1 성공
                 text[1].alpha = 1
                 transition.to(road[1], {time = 300, alpha = 1})
                 transition.to(kimbap[2], {time = 2500, alpha = 1})
@@ -128,7 +140,7 @@ function scene:create(event)
             for i = 1, currentstage, 1 do kimbap[i].alpha = 1 end
             road[1].alpha = 1
 
-            if score > 5000 then -- 스테이지2 성공
+            if score > 10000 then -- 스테이지2 성공
                 text[1].alpha = 1
                 transition.to(road[2], {time = 300, alpha = 1})
                 transition.to(kimbap[3], {time = 2500, alpha = 1})
@@ -145,7 +157,7 @@ function scene:create(event)
             for i = 1, currentstage, 1 do kimbap[i].alpha = 1 end
             for i = 1, currentstage - 1, 1 do road[i].alpha = 1 end
             
-            if score > 8000 then -- 스테이지3 성공
+            if score > 20000 then -- 스테이지3 성공
                 text[1].alpha = 1
                 transition.to(road[3], {time = 300, alpha = 1})
                 transition.to(kimbap[4], {time = 2500, alpha = 1})
@@ -161,7 +173,7 @@ function scene:create(event)
             for i = 1, currentstage, 1 do kimbap[i].alpha = 1 end
             for i = 1, currentstage - 1, 1 do road[i].alpha = 1 end
             
-            if score > 10000 then -- 스테이지4 성공
+            if score > 35000 then -- 스테이지4 성공
                 text[1].alpha = 1
                 transition.to(road[4], {time = 300, alpha = 1})
                 transition.to(kimbap[5], {time = 2500, alpha = 1})
@@ -177,7 +189,7 @@ function scene:create(event)
             for i = 1, currentstage, 1 do kimbap[i].alpha = 1 end
             for i = 1, currentstage - 1, 1 do road[i].alpha = 1 end
 
-            if score > 15000 then -- 스테이지5 성공
+            if score > 53000 then -- 스테이지5 성공
                 text[1].alpha = 1
                 stage = 6
                 timer.performWithDelay(1000, moveScene)
@@ -191,8 +203,8 @@ function scene:create(event)
 
     -- [[ 버튼 ]]
     btn[1] = widget.newButton({ 
-        defaultFile = "img/input_C.png", overFile = "img/input_C_over.png", 
-        width = 100, height = 100, onPress = inputEvent 
+        defaultFile = "img/continuing.png", overFile = "img/continuing.png", 
+        width = 150, height = 100, onPress = inputEvent 
     })
     btn[1].x, btn[1].y =  display.contentWidth-150, 120
     btn[1].name = "C"
@@ -204,7 +216,9 @@ function scene:create(event)
 
     -- [[ 장면 삽입 ]]
     sceneGroup:insert(background)
+    sceneGroup:insert(talkBG)
     for i = 1, 4, 1 do sceneGroup:insert(road[i]) end
+    for i = 1, 5, 1 do sceneGroup:insert(spot[i]) end
     for i = 1, 5, 1 do sceneGroup:insert(kimbap[i]) end
     sceneGroup:insert(truck[1])
     sceneGroup:insert(btn[1])

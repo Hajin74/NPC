@@ -16,6 +16,7 @@ local physics = require("physics")
 
 -- 음악
 audio.pause( startCh ) -- 오프닝 노래 끄기
+audio.stop( mapCh ) -- 맵 노래 끄기
 local counter = audio.loadStream( "music/counter.ogg" ) -- 카운터배경
 local counterCh = audio.play( counter, { channel=1, loops=0, fadein=4000 } )
 local clickMusic = audio.loadStream( "music/click.mp3" )
@@ -24,6 +25,7 @@ local calcKimbapMusic = audio.loadStream( "music/calcKimbap.mp3" )
 
 -- 변수
 local currentstage = 1
+local score2 = 0
 money = 0
 
 -- GUI
@@ -60,8 +62,8 @@ function scene:create( event )
 	rightUI[2].x, rightUI[2].y = display.contentWidth - 120, 50
 	rightUI[3] = display.newImageRect("img/arrow.png", 70, 70)
 	rightUI[3].x, rightUI[3].y = display.contentWidth - 190, 50
-	rightUI[4] = display.newImageRect("img/recipe_over.png", 300, 200)
-	rightUI[4].x, rightUI[4].y = display.contentWidth - 180, 200
+	rightUI[4] = display.newImageRect("img/recipe_over.png", 700, 450)
+	rightUI[4].x, rightUI[4].y = display.contentWidth - 350, 300
 	rightUI[4].alpha = 0
 	
 
@@ -133,7 +135,13 @@ function scene:create( event )
 			for i = 1, 4, 1 do leftUI[i].alpha = 0 end
 			for i = 1, 4, 1 do rightUI[i].alpha = 0 end
 			composer.setVariable("currentstage", currentstage)
-			composer.setVariable("money", money)
+			if money > 3300 then
+				composer.setVariable("money", money)
+				composer.setVariable("textScore", money)
+			else
+				composer.setVariable("money", score2)
+				composer.setVariable("textScore", money)
+			end
 			composer.gotoScene("map")
 		end
 		leftUI[1].width = leftUI[1].width - 10

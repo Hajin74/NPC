@@ -25,6 +25,7 @@ local calcKimbapMusic = audio.loadStream( "music/calcKimbap.mp3" )
 
 -- 변수
 money = composer.getVariable("score")
+local score2 = composer.getVariable("score")
 --money = 3008
 local currentstage = 2
 
@@ -62,8 +63,8 @@ function scene:create( event )
 	rightUI[2].x, rightUI[2].y = display.contentWidth - 120, 50
 	rightUI[3] = display.newImageRect("img/arrow.png", 70, 70)
 	rightUI[3].x, rightUI[3].y = display.contentWidth - 190, 50
-	rightUI[4] = display.newImageRect("img/recipe_over.png", 300, 200)
-	rightUI[4].x, rightUI[4].y = display.contentWidth - 180, 200
+	rightUI[4] = display.newImageRect("img/recipe_over.png", 700, 450)
+	rightUI[4].x, rightUI[4].y = display.contentWidth - 350, 300
 	rightUI[4].alpha = 0
 	
 
@@ -81,7 +82,7 @@ function scene:create( event )
 	orderUI[3] = display.newImageRect("img/deny.png", 110, 45)
     orderUI[3].x, orderUI[3].y = 900, 301
     -- 김밥 주문 종류
-	orderUI[4] = display.newText("마라선생님! \n꼬마김밥 주세요.", 850, 220, "굴림")
+	orderUI[4] = display.newText("간단하게 꼬마김밥 렛츠고!", 850, 220, "굴림")
 	orderUI[4].size = 30
 	orderUI[4]:setFillColor(0)
 	orderUI[5] = display.newText("매운게 땡기는 날이야.\n김치김밥 주세요!", 850, 220, "굴림")
@@ -139,14 +140,20 @@ function scene:create( event )
             for i = 1, 4, 1 do leftUI[i].alpha = 0 end
 			for i = 1, 4, 1 do rightUI[i].alpha = 0 end
 			composer.setVariable("currentstage", currentstage)
-			composer.setVariable("money", money)
+			if money > 10000 then
+				composer.setVariable("money", money)
+				composer.setVariable("textScore", money)
+			else
+				composer.setVariable("money", score2)
+				composer.setVariable("textScore", money)
+			end
 			composer.gotoScene("map")
 		end
 		leftUI[1].width = leftUI[1].width - 10
 		leftUI[1].x = leftUI[1].x - 5
 	end
 
-	timer.performWithDelay(1000, hp, 31)
+	timer.performWithDelay(1200, hp, 31)
 
 	local function toCook() -- 조리화면으로 이동
 		for i = 1, 2, 1 do kimbap[i].alpha = 0 end -- 조리화면으로 이동하면 카운터에 놓인 김밥은 사라짐

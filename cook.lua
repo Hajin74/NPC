@@ -43,8 +43,8 @@ function scene:create( event )
     gameUI[1].x, gameUI[1].y = display.contentWidth/2 + 180, display.contentHeight- 60
     gameUI[2] = display.newImageRect("img/trashcan.png", 80, 80)
     gameUI[2].x, gameUI[2].y = display.contentWidth/2 + 280, display.contentHeight- 60
-    gameUI[3] = display.newImageRect("img/warning1.png", 300, 80)
-    gameUI[3].x, gameUI[3].y = 500, 500
+    gameUI[3] = display.newImageRect("img/warning1.png", 500, 300)
+    gameUI[3].x, gameUI[3].y = display.contentWidth/2 + 35, display.contentHeight/2 + 40
     gameUI[3].alpha = 0
 
     -- 진열된 재료

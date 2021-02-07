@@ -75,9 +75,9 @@ function scene:create( event )
     usedIG[3] = display.newImageRect("img/pickledradish2.png", 450, 40)
     usedIG[4] = display.newImageRect("img/egg2.png", 430, 30)
     usedIG[5] = display.newImageRect("img/ham2.png", 430, 30)
-    usedIG[6] = display.newImageRect("img/kimchi2.png", 430, 30)
-    usedIG[7] = display.newImageRect("img/tuna2.png", 430, 30)
-    usedIG[8] = display.newImageRect("img/shrimp2.png", 430, 30)
+    usedIG[6] = display.newImageRect("img/kimchi2.png", 430, 50)
+    usedIG[7] = display.newImageRect("img/tuna2.png", 430, 50)
+    usedIG[8] = display.newImageRect("img/shrimp2.png", 430, 50)
     for i = 3, 8, 1 do usedIG[i].x, usedIG[i].y = display.contentWidth/2 + 35, 550 - 20 * (i - 1) end -- 재료 위치
     for i = 1, 8, 1 do usedIG[i].alpha = 0 end -- 숨김처리
 

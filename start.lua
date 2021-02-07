@@ -28,21 +28,20 @@ function scene:create( event )
 
     start:addEventListener("tap", goNewGame)
 
-    local function continueGame( event )
-    	--이어하기
-    end
-
-    local continue = display.newImage("img/continuing.png")
-    continue.x, continue.y = 1140, 310
-
-    continue:addEventListener("tap", continueGame)
 
     local function goHelp( event )
-    	--도움말
+    	local helpOver = display.newImageRect("img/help_over.png", display.contentWidth, display.contentHeight)
+		helpOver.x, helpOver.y = display.contentWidth/2, display.contentHeight/2
+		
+		local function closeHelp()
+			helpOver.alpha = 0
+		end
+
+		helpOver:addEventListener("tap", closeHelp)
     end
 
     local help = display.newImage("img/help.png")
-    help.x, help.y = 1140, 435
+    help.x, help.y = 1140, 300
 
     help:addEventListener("tap", goHelp)
     
@@ -50,7 +49,6 @@ function scene:create( event )
 
     sceneGroup:insert( background )
     sceneGroup:insert( start )
-    sceneGroup:insert( continue )
     sceneGroup:insert( help )
 end
 
