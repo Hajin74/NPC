@@ -41,7 +41,7 @@ local kimbap = {}
 function scene:create( event )
 	local sceneGroup = self.view
 
-	background[1] = display.newImageRect("img/uni.jpg", 1250, 460)
+	background[1] = display.newImageRect("img/uni.png", 1250, 460)
 	background[1].x, background[1].y = display.contentWidth/2, 290
 	background[2] = display.newImageRect("img/truck.png", display.contentWidth, display.contentHeight)
 	background[2].x, background[2].y = display.contentWidth/2, display.contentHeight/2
