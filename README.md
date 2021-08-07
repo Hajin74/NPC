@@ -29,3 +29,6 @@ opening, start: 오프닝, 게임시작화면\
 ending: 엔딩
 
 LUA언어를 사용하여 개발하였습니다.
+
+### 플레이
+https://youtu.be/JJTNVDtpFok
