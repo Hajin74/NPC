@@ -1,2 +1,2 @@
-# Boxing1
- Boxing1
+# Boxing
+ Boxing MiniGame
